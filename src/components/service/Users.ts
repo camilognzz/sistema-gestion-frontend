@@ -14,7 +14,7 @@ interface LoginResponse {
 interface UserRegisterData {
     name: string;
     email: string;
-    password: string;
+    password?: string;
     role: string;
 }
 
@@ -35,9 +35,12 @@ class Users {
                 password,
             });
 
+            console.log("Respuesta de la API:", response.data);
+
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error)) {
+                console.error("Error en la solicitud:", error.response?.data);
                 throw new Error(error.response?.data?.message || "Error en la solicitud");
             } else {
                 throw new Error("Error desconocido");
@@ -107,7 +110,7 @@ class Users {
         }
     }
 
-    static async getUserById(userId: number, token: string): Promise<User> {
+    static async getUserById(userId: string, token: string): Promise<User> {
         try {
             const response = await axios.get<User>(`${Users.BASE_URL}/admin/get-user/${userId}`, {
                 headers: {

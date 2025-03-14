@@ -14,11 +14,12 @@ export const Login = () => {
 
         try {
             const userData = await Users.login(email, password);
+            console.log("Respuesta del servidor:", userData); // Verifica qué llega
 
-            if (userData?.token && userData.user) {
-                localStorage.setItem('token', userData.token);
-                localStorage.setItem('role', userData.user.role);
-                navigate('/profile');
+            if (userData?.token) {
+                localStorage.setItem("token", userData.token);
+                console.log("Token guardado correctamente:", userData.token);
+                navigate("/profile");
             } else {
                 setError("Credenciales incorrectas");
             }
@@ -30,10 +31,11 @@ export const Login = () => {
             }
 
             setTimeout(() => {
-                setError('');
+                setError("");
             }, 5000);
         }
     };
+
 
 
     return (
