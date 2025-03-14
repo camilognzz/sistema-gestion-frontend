@@ -26,13 +26,14 @@ function Profile() {
       }
 
       const response: User = await Users.getYourProfile(token);
-      console.log('API Response:', response); // <-- Verifica qué llega aquí
+      console.log('Perfil obtenido:', response); // 👀 Verifica que el role está llegando
 
       setProfileInfo(response);
     } catch (error) {
       console.error('Error fetching profile information:', error);
     }
   };
+
 
   return (
     <div className="profile-page-container">
