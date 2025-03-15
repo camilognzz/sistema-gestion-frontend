@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Users from '../service/Users';
+import Navbar from '../common/Navbar';
 
 interface User {
   id: number;
@@ -36,22 +37,25 @@ function Profile() {
 
 
   return (
-    <div className="profile-page-container">
-      <h2>Profile Information</h2>
-      {profileInfo ? (
-        <>
-          <p>Name: {profileInfo.name}</p>
-          <p>Email: {profileInfo.email}</p>
-          {profileInfo.role === 'ADMIN' && (
-            <button>
-              <Link to={`/update-user/${profileInfo.id}`}>Update This Profile</Link>
-            </button>
-          )}
-        </>
-      ) : (
-        <p>Loading profile...</p>
-      )}
-    </div>
+    <>
+      <Navbar />
+      <div className="profile-page-container">
+        <h2>Profile Information</h2>
+        {profileInfo ? (
+          <>
+            <p>Name: {profileInfo.name}</p>
+            <p>Email: {profileInfo.email}</p>
+            {profileInfo.role === 'ADMIN' && (
+              <button>
+                <Link to={`/update-user/${profileInfo.id}`}>Update This Profile</Link>
+              </button>
+            )}
+          </>
+        ) : (
+          <p>Loading profile...</p>
+        )}
+      </div>
+    </>
   );
 }
 
