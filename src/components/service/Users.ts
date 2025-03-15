@@ -39,8 +39,6 @@ class Users {
         }
       );
 
-      console.log("Respuesta de la API:", response.data);
-
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
