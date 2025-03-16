@@ -127,18 +127,20 @@ class Users {
   }
 
   /** 🔹 Obtener usuario por ID */
-  static async getUserById(userId: string, token: string): Promise<User> {
+  static async getUserById(userId: string, token: string): Promise<{ user: User }> {
     try {
-      const response = await axios.get<User>(
+      const response = await axios.get<{ user: User }>(
         `${Users.BASE_URL}/admin/get-users/${userId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       return response.data;
     } catch (error) {
       this.handleError(error);
+      throw error; // Lanza el error para manejarlo en `fetchUserDataById`
     }
   }
+  
+  
 
   /** 🔹 Eliminar usuario */
   static async deleteUser(userId: number, token: string): Promise<User> {
