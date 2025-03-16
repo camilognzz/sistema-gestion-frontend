@@ -66,14 +66,14 @@ function Navbar() {
         {/* Cuenta y Cerrar sesión */}
         <div className="flex items-center gap-2 md:gap-4">
           <span className="text-gray-700 text-sm md:text-base font-medium">
-            {userName ? `Bienvenido, ${userName}` : "Bienvenido"}
+            {userName ? `Bienvenido(a), ${userName}` : "Bienvenido(a)"}
           </span>
           <Link to={"/profile"}>
-            <FaUserCircle className="text-xl md:text-2xl text-gray-500 hover:text-gray-600 cursor-pointer" />
+            <FaUserCircle className="text-xl md:text-2xl text-gray-600 hover:text-gray-600 cursor-pointer" />
           </Link>
           {isAuthenticated && (
             <FaSignOutAlt
-              className="text-xl md:text-2xl text-red-500 cursor-pointer hover:text-red-600 transition"
+              className="text-xl md:text-2xl text-gray-600 cursor-pointer hover:text-red-600 transition"
               onClick={() => setShowModal(true)}
             />
           )}
@@ -97,13 +97,13 @@ function Navbar() {
             </div>
             <div className="mt-4 flex justify-end gap-4">
               <button
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 cursor-pointer"
                 onClick={() => setShowModal(false)}
               >
                 Cancelar
               </button>
               <button
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
                 onClick={handleLogout}
               >
                 Cerrar sesión

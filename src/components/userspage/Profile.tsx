@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Users from '../service/Users';
 import Navbar from '../common/Navbar';
+import Sidebar, { SidebarItem } from '../common/Sidebar';
+import { User, Briefcase, Mail, Users as UsersIcon, DollarSign } from "lucide-react"; // Importar iconos
 
-interface User {
+interface UserProfile {
   id: number;
   name: string;
   email: string;
@@ -11,7 +13,7 @@ interface User {
 }
 
 function Profile() {
-  const [profileInfo, setProfileInfo] = useState<User | null>(null);
+  const [profileInfo, setProfileInfo] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     fetchProfileInfo();
@@ -26,8 +28,8 @@ function Profile() {
         return;
       }
 
-      const response: User = await Users.getYourProfile(token);
-      console.log('Perfil obtenido:', response); // 👀 Verifica que el role está llegando
+      const response: UserProfile = await Users.getYourProfile(token);
+      console.log('Perfil obtenido:', response);
 
       setProfileInfo(response);
     } catch (error) {
@@ -38,21 +40,41 @@ function Profile() {
   return (
     <>
       <Navbar />
-      <div className="profile-page-container">
-        <h2>Profile Information</h2>
-        {profileInfo ? (
-          <>
-            <p>Name: {profileInfo.name}</p>
-            <p>Email: {profileInfo.email}</p>
-            {profileInfo.role === 'ADMIN' && (
-              <button>
-                <Link to={`/update-user/${profileInfo.id}`}>Update This Profile</Link>
-              </button>
-            )}
-          </>
-        ) : (
-          <p>Loading profile...</p>
-        )}
+      <div className="flex">
+        {/* Sidebar con las opciones en el orden solicitado */}
+        <Sidebar>
+          {/* Usuarios (solo para administradores) */}
+          {profileInfo?.role === 'ADMIN' && (
+            <SidebarItem icon={<User size={20} />} text="Usuarios" />
+          )}
+
+          <SidebarItem icon={<Briefcase size={20} />} text="Proyectos" />
+          <SidebarItem icon={<Mail size={20} />} text="Contactos" />
+          <SidebarItem icon={<UsersIcon size={20} />} text="Voluntarios" />
+
+          {/* Finanzas (solo para administradores) */}
+          {profileInfo?.role === 'ADMIN' && (
+            <SidebarItem icon={<DollarSign size={20} />} text="Finanzas" />
+          )}
+        </Sidebar>
+
+        {/* Contenido principal */}
+        <div className="p-6 flex-1">
+          <h2 className="text-xl font-bold">Información del Perfil</h2>
+          {profileInfo ? (
+            <>
+              <p><strong>Nombre:</strong> {profileInfo.name}</p>
+              <p><strong>Email:</strong> {profileInfo.email}</p>
+              {profileInfo.role === 'ADMIN' && (
+                <button className="mt-4 p-2 bg-blue-500 text-white rounded">
+                  <Link to={`/update-user/${profileInfo.id}`}>Actualizar Perfil</Link>
+                </button>
+              )}
+            </>
+          ) : (
+            <p>Cargando perfil...</p>
+          )}
+        </div>
       </div>
     </>
   );
