@@ -36,9 +36,11 @@ export const Login = () => {
 
         try {
             const userData = await Users.login(email, password);
-
-            if (userData?.token) {
-                localStorage.setItem("token", userData.token);
+            if (userData.token) {
+                localStorage.setItem('token', userData.token);
+                if (userData.user) {
+                    localStorage.setItem('role', userData.user.role);
+                }
                 navigate("/profile");
             } else {
                 setError("Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");

@@ -35,7 +35,6 @@ function Profile() {
     }
   };
 
-
   return (
     <>
       <Navbar />

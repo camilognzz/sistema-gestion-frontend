@@ -6,12 +6,7 @@ import Update from './components/userspage/Update';
 import Management from './components/userspage/Management';
 import Profile from './components/userspage/Profile';
 
-
-
-
 function App() {
-
-
   return (
     <BrowserRouter>
       <div className="App">
@@ -21,7 +16,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
 
-            {/* Check if user is authenticated and admin before rendering admin-only routes */}
+            {/* Admin-only routes */}
             {Users.adminOnly() && (
               <>
                 <Route path="/register" element={<Registration />} />
@@ -29,15 +24,12 @@ function App() {
                 <Route path="/update-user/:userId" element={<Update />} />
               </>
             )}
-            <Route path="*" element={<Navigate to="/login" />} />‰
+
+            <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </div>
       </div>
     </BrowserRouter>
   );
-
-
-
 }
-
 export default App;

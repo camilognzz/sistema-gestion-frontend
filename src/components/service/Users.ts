@@ -19,39 +19,58 @@ interface UserRegisterData {
 }
 
 interface User {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    password?: string; // Hacerla opcional
-  }
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  password?: string;
+}
 
 class Users {
   private static readonly BASE_URL = "http://localhost:8080";
 
-  static async login(email: string, password: string): Promise<LoginResponse> {
-    try {
-      const response = await axios.post<LoginResponse>(
-        `${Users.BASE_URL}/auth/login`,
-        {
-          email,
-          password,
-        }
+  /** 🔹 Función auxiliar para manejar errores */
+  private static handleError(error: unknown): never {
+    if (axios.isAxiosError(error)) {
+      console.error(
+        "❌ Error en Axios:",
+        error.response?.data || error.message
       );
+      throw new Error(error.response?.data?.message || "Error en la solicitud");
+    }
+    console.error("❌ Error desconocido:", error);
+    throw new Error("Error desconocido");
+  }
 
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Error en la solicitud:", error.response?.data);
-        throw new Error(
-          error.response?.data?.message || "Error en la solicitud"
-        );
-      } else {
-        throw new Error("Error desconocido");
+  /** 🔹 Login */
+  static async login(email: string, password: string) {
+    try {
+      const response = await axios.post(`${Users.BASE_URL}/auth/login`, {
+        email,
+        password,
+      });
+
+      console.log("🔍 Respuesta del backend:", response.data);
+
+      const { token, role } = response.data; // Extraer datos correctamente
+
+      if (!token || !role) {
+        throw new Error("❌ No se recibió token o rol válido");
       }
+
+      // Guardar en localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      console.log("✅ Token y rol guardados en localStorage");
+      return { token, role };
+    } catch (error) {
+      console.error("❌ Error en login:", error);
+      throw error;
     }
   }
 
+  /** 🔹 Registro */
   static async register(
     userData: UserRegisterData,
     token: string
@@ -70,113 +89,72 @@ class Users {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          error.response?.data?.message || "Error en la solicitud"
-        );
-      } else {
-        throw new Error("Error desconocido");
-      }
+      this.handleError(error);
     }
   }
 
+  /** 🔹 Obtener todos los usuarios */
   static async getAllUsers(token: string): Promise<User[]> {
-    try {
-      const response = await axios.get<User[]>(
-        `${Users.BASE_URL}/admin/get-all-user`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          error.response?.data?.message || "Error en la solicitud"
-        );
-      } else {
-        throw new Error("Error desconocido");
-      }
-    }
-  }
-
-  static async getYourProfile(token: string): Promise<User> {
     try {
       const response = await axios.get<{
         statusCode: number;
         message: string;
-        user: User;
-      }>(`${Users.BASE_URL}/adminuser/get-profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        usersList: User[];
+      }>(`${Users.BASE_URL}/admin/get-all-users`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      return response.data.user; // Extraer solo el objeto user
+      console.log("📡 Respuesta del backend:", response.data); // Depuración
+
+      return response.data.usersList; // Extraer solo la lista de usuarios
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          error.response?.data?.message || "Error en la solicitud"
-        );
-      } else {
-        throw new Error("Error desconocido");
-      }
+      this.handleError(error);
     }
   }
 
+  /** 🔹 Obtener perfil propio */
+  static async getYourProfile(token: string): Promise<User> {
+    try {
+      const response = await axios.get<{ user: User }>(
+        `${Users.BASE_URL}/adminuser/get-profile`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      return response.data.user;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  /** 🔹 Obtener usuario por ID */
   static async getUserById(userId: string, token: string): Promise<User> {
     try {
       const response = await axios.get<User>(
-        `${Users.BASE_URL}/admin/get-user/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        `${Users.BASE_URL}/admin/get-users/${userId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          error.response?.data?.message || "Error en la solicitud"
-        );
-      } else {
-        throw new Error("Error desconocido");
-      }
+      this.handleError(error);
     }
   }
 
+  /** 🔹 Eliminar usuario */
   static async deleteUser(userId: number, token: string): Promise<User> {
     try {
       const response = await axios.delete<User>(
         `${Users.BASE_URL}/admin/delete/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          error.response?.data?.message || "Error en la solicitud"
-        );
-      } else {
-        throw new Error("Error desconocido");
-      }
+      this.handleError(error);
     }
   }
 
+  /** 🔹 Actualizar usuario */
   static async updateUser(
     userId: number,
     userData: UserRegisterData,
@@ -186,48 +164,47 @@ class Users {
       const response = await axios.put<User>(
         `${Users.BASE_URL}/admin/update/${userId}`,
         userData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          error.response?.data?.message || "Error en la solicitud"
-        );
-      } else {
-        throw new Error("Error desconocido");
-      }
+      this.handleError(error);
     }
   }
 
-  /* AUTHENTICATION CHECKER */
+  /** 🔹 Cerrar sesión */
   static logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    console.log("🚪 Sesión cerrada");
   }
 
-  static isAuthenticated() {
-    const token = localStorage.getItem("token");
-    return !!token;
+  /** 🔹 Verificar autenticación */
+  static isAuthenticated(): boolean {
+    return !!localStorage.getItem("token");
   }
 
-  static isAdmin() {
+  /** 🔹 Verificar si el usuario es admin */
+  static isAdmin(): boolean {
     const role = localStorage.getItem("role");
-    return role == "ADMIN";
+    console.log("🔍 Verificando role en isAdmin:", role);
+    return role === "ADMIN";
   }
 
-  static isUser() {
-    const role = localStorage.getItem("role");
-    return role == "USER";
+  /** 🔹 Verificar si el usuario es normal */
+  static isUser(): boolean {
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      return user.role?.toUpperCase() === "USER";
+    } catch (error) {
+      console.error("Error al parsear user:", error);
+      return false;
+    }
   }
 
-  static adminOnly() {
+  /** 🔹 Acceso exclusivo para administradores */
+  static adminOnly(): boolean {
     return this.isAuthenticated() && this.isAdmin();
   }
 }

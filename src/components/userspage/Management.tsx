@@ -24,22 +24,21 @@ const Management: React.FC = () => {
                 console.error('No authentication token found.');
                 return;
             }
-
-            const response: User[] = await Users.getAllUsers(token); // Aseguramos que devuelve un array de User
-
-            if (Array.isArray(response)) {
-                setUsers(response);
+    
+            const usersResponse: User[] = await Users.getAllUsers(token);
+    
+            if (Array.isArray(usersResponse)) {
+                setUsers(usersResponse); // Directamente asignar el array de usuarios
             } else {
-                console.error('Invalid response format:', response);
-                setUsers([]); // Evita asignar valores incorrectos
+                console.error('Invalid response format:', usersResponse);
+                setUsers([]);
             }
         } catch (error) {
             console.error('Error fetching users:', error);
-            setUsers([]); // En caso de error, asigna un array vacío
+            setUsers([]);
         }
     };
-
-
+    
     // Eliminar usuario
     const deleteUser = async (userId: number): Promise<void> => {
         try {
