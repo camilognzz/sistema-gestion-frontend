@@ -21,7 +21,7 @@ export default function Sidebar({ children }: SidebarProps) {
         {/* Header */}
         <div className="p-4 pb-2 flex justify-between items-center">
           <img
-            src="images/logo-f-h-2-r.png"
+            src="/images/logo-f-h-2-r.png"
             className={`overflow-hidden transition-all ${expanded ? "w-32" : "w-0"}`}
             alt="Logo"
           />

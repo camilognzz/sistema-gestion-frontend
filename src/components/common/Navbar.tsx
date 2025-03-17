@@ -14,13 +14,13 @@ function Navbar() {
   const navigate = useNavigate();
   const [userName, setUserName] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const isAuthenticated = Users.isAuthenticated();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       const storedUser = localStorage.getItem("user");
-
       if (storedUser) {
         try {
           const user = JSON.parse(storedUser);
@@ -33,13 +33,12 @@ function Navbar() {
         }
       }
 
-      // Si no hay usuario en localStorage, obtenemos el perfil desde el backend
       const token = localStorage.getItem("token");
       if (token) {
         try {
           const user = await Users.getYourProfile(token);
           setUserName(user.name);
-          localStorage.setItem("user", JSON.stringify(user)); // Guardamos el usuario en localStorage
+          localStorage.setItem("user", JSON.stringify(user));
         } catch (error) {
           console.error("Error obteniendo el perfil:", error);
         }
@@ -50,9 +49,13 @@ function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Asegurar que se elimine el usuario almacenado
+    localStorage.removeItem("user");
     Users.logout();
     navigate("/login");
+  };
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
   };
 
   return (
@@ -63,23 +66,46 @@ function Navbar() {
           Gestión Social
         </div>
 
-        {/* Cuenta y Cerrar sesión */}
+        {/* Cuenta */}
         <div className="flex items-center gap-2 md:gap-4">
           <span className="text-gray-700 text-sm md:text-base font-medium">
             {userName ? `Bienvenido(a), ${userName}` : "Bienvenido(a)"}
           </span>
-          <Link to={"/profile"}>
-            <FaUserCircle className="text-xl md:text-2xl text-gray-600 hover:text-gray-600 cursor-pointer" />
-          </Link>
-          {isAuthenticated && (
-            <FaSignOutAlt
-              className="text-xl md:text-2xl text-gray-600 cursor-pointer hover:text-red-600 transition"
-              onClick={() => setShowModal(true)}
-            />
-          )}
+          <FaUserCircle
+            className="text-xl md:text-2xl text-gray-600 hover:text-gray-800 cursor-pointer"
+            onClick={toggleDrawer}
+          />
         </div>
       </nav>
 
+      {/* Drawer pequeño */}
+      {isDrawerOpen && (
+        <div className="absolute top-16 right-4 z-50 bg-slate-50 shadow-lg rounded-lg p-4 w-48">
+          <div className="flex flex-col gap-2">
+            <Link
+              to="/profile"
+              className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-all"
+              onClick={toggleDrawer}
+            >
+              <FaUserCircle className="text-xl" />
+              <span className="text-sm font-medium">Perfil</span>
+            </Link>
+            <hr className="my-2 border-gray-200" /> {/* Línea divisoria */}
+            {isAuthenticated && (
+              <button
+                className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-all cursor-pointer"
+                onClick={() => {
+                  setShowModal(true);
+                  toggleDrawer();
+                }}
+              >
+                <FaSignOutAlt className="text-xl" />
+                <span className="text-sm font-medium">Cerrar sesión</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
       {/* Modal de confirmación */}
       <Dialog open={showModal} onClose={setShowModal} className="relative z-10">
         <DialogBackdrop className="fixed inset-0 bg-gray-500/75" />
