@@ -69,7 +69,7 @@ function Profile() {
                 {profileInfo.role === "ADMIN" && (
                   <div className="mt-6 flex justify-center">
                     <Link to={`/update-user/${profileInfo.id}`}>
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm">
+                      <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm">
                         Actualizar Perfil
                       </button>
                     </Link>

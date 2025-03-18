@@ -42,7 +42,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose, title }) =
               </div>
               <div className="mt-6 flex justify-end">
                 <button
-                  className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                  className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
                   onClick={onClose}
                 >
                   Cerrar

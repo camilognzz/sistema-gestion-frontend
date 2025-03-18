@@ -358,7 +358,7 @@ const Management: React.FC = () => {
                         <div className="mt-6 flex justify-end">
                           <button
                             onClick={closeModal}
-                            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
                           >
                             Cerrar
                           </button>
@@ -379,7 +379,11 @@ const Management: React.FC = () => {
               confirmText="Eliminar"
               cancelText="Cancelar"
             />
-            <SuccessModal isOpen={isSuccessModalOpen} onClose={closeSuccessModal} title="Usuario eliminado exitosamente" />
+
+            <SuccessModal 
+            isOpen={isSuccessModalOpen}
+             onClose={closeSuccessModal} 
+             title="Usuario eliminado exitosamente" />
           </div>
         </main>
       </div>

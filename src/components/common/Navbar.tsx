@@ -63,51 +63,52 @@ function Navbar() {
         {/* Cuenta */}
         <div className="flex items-center gap-2 md:gap-4">
           <span className="text-gray-700 text-sm md:text-base font-medium">
-            {userName ? `Bienvenido(a), ${userName}` : "Bienvenido(a)"}
+            {userName ? `Bienvenido(a), ${userName.split(" ")[0]}` : "Bienvenido(a)"}
           </span>
           <FaUserCircle
             className="text-xl md:text-2xl text-gray-600 hover:text-gray-800 cursor-pointer"
             onClick={toggleDrawer}
           />
         </div>
+
       </nav>
 
       {/* Drawer pequeño */}
       {isDrawerOpen && (
-  <div 
-    className="fixed inset-0 z-40"
-    onClick={() => setIsDrawerOpen(false)} // Cierra el drawer al hacer clic fuera
-  >
-    <div
-      className="absolute top-16 right-4 z-50 bg-slate-50 shadow-lg rounded-lg p-4 w-48"
-      onClick={(e) => e.stopPropagation()} // Evita que el clic dentro del drawer lo cierre
-    >
-      <div className="flex flex-col gap-2">
-        <Link
-          to="/profile"
-          className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-all"
-          onClick={() => setIsDrawerOpen(false)} // Cierra el drawer después de hacer clic en un enlace
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setIsDrawerOpen(false)} // Cierra el drawer al hacer clic fuera
         >
-          <FaUserCircle className="text-xl" />
-          <span className="text-sm font-medium">Perfil</span>
-        </Link>
-        <hr className="my-2 border-gray-200" /> {/* Línea divisoria */}
-        {isAuthenticated && (
-          <button
-            className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-all cursor-pointer"
-            onClick={() => {
-              setShowModal(true);
-              setIsDrawerOpen(false); // Cierra el drawer antes de abrir el modal
-            }}
+          <div
+            className="absolute top-16 right-4 z-50 bg-slate-50 shadow-lg rounded-lg p-4 w-48"
+            onClick={(e) => e.stopPropagation()} // Evita que el clic dentro del drawer lo cierre
           >
-            <FaSignOutAlt className="text-xl" />
-            <span className="text-sm font-medium">Cerrar sesión</span>
-          </button>
-        )}
-      </div>
-    </div>
-  </div>
-)}
+            <div className="flex flex-col gap-2">
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-all"
+                onClick={() => setIsDrawerOpen(false)} // Cierra el drawer después de hacer clic en un enlace
+              >
+                <FaUserCircle className="text-xl" />
+                <span className="text-sm font-medium">Perfil</span>
+              </Link>
+              <hr className="my-2 border-gray-200" /> {/* Línea divisoria */}
+              {isAuthenticated && (
+                <button
+                  className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-all cursor-pointer"
+                  onClick={() => {
+                    setShowModal(true);
+                    setIsDrawerOpen(false); // Cierra el drawer antes de abrir el modal
+                  }}
+                >
+                  <FaSignOutAlt className="text-xl" />
+                  <span className="text-sm font-medium">Cerrar sesión</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
 
       {/* Modal de confirmación reutilizable */}
