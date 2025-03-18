@@ -18,7 +18,7 @@ interface UserRegisterData {
   role: string;
 }
 
-interface User {
+export interface User {
   id: number;
   name: string;
   email: string;
@@ -127,7 +127,10 @@ class Users {
   }
 
   /** 🔹 Obtener usuario por ID */
-  static async getUserById(userId: string, token: string): Promise<{ user: User }> {
+  static async getUserById(
+    userId: string,
+    token: string
+  ): Promise<{ user: User }> {
     try {
       const response = await axios.get<{ user: User }>(
         `${Users.BASE_URL}/admin/get-users/${userId}`,
@@ -139,8 +142,6 @@ class Users {
       throw error; // Lanza el error para manejarlo en `fetchUserDataById`
     }
   }
-  
-  
 
   /** 🔹 Eliminar usuario */
   static async deleteUser(userId: number, token: string): Promise<User> {

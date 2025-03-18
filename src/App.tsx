@@ -5,6 +5,9 @@ import Users from './components/service/Users';
 import Update from './components/userspage/Update';
 import Management from './components/userspage/Management';
 import Profile from './components/userspage/Profile';
+import Project from "./components/projectspage/Project";
+import CreateProject from "./components/projectspage/CreateProject";
+
 
 function App() {
   return (
@@ -15,6 +18,9 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/api/v1/proyectos" element={<Project />}/>
+            <Route path="/create-project" element={<CreateProject />}/>
+
 
             {/* Admin-only routes */}
             {Users.adminOnly() && (
