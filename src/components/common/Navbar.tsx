@@ -2,13 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Users from "../service/Users";
 import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import ConfirmationModal from "../modals/ConfirmationModal";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -80,64 +74,51 @@ function Navbar() {
 
       {/* Drawer pequeño */}
       {isDrawerOpen && (
-        <div className="absolute top-16 right-4 z-50 bg-slate-50 shadow-lg rounded-lg p-4 w-48">
-          <div className="flex flex-col gap-2">
-            <Link
-              to="/profile"
-              className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-all"
-              onClick={toggleDrawer}
-            >
-              <FaUserCircle className="text-xl" />
-              <span className="text-sm font-medium">Perfil</span>
-            </Link>
-            <hr className="my-2 border-gray-200" /> {/* Línea divisoria */}
-            {isAuthenticated && (
-              <button
-                className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-all cursor-pointer"
-                onClick={() => {
-                  setShowModal(true);
-                  toggleDrawer();
-                }}
-              >
-                <FaSignOutAlt className="text-xl" />
-                <span className="text-sm font-medium">Cerrar sesión</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-      {/* Modal de confirmación */}
-      <Dialog open={showModal} onClose={setShowModal} className="relative z-10">
-        <DialogBackdrop className="fixed inset-0 bg-gray-500/75" />
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto flex items-center justify-center p-4">
-          <DialogPanel className="bg-white rounded-lg shadow-xl p-6 w-80 sm:max-w-lg">
-            <div className="flex items-center">
-              <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
-                <ExclamationTriangleIcon className="size-6 text-red-600" />
-              </div>
-              <div className="ml-4 text-left">
-                <DialogTitle className="text-lg font-bold text-gray-900">
-                  ¿Estás seguro de cerrar sesión?
-                </DialogTitle>
-              </div>
-            </div>
-            <div className="mt-4 flex justify-end gap-4">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 cursor-pointer"
-                onClick={() => setShowModal(false)}
-              >
-                Cancelar
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
-                onClick={handleLogout}
-              >
-                Cerrar sesión
-              </button>
-            </div>
-          </DialogPanel>
-        </div>
-      </Dialog>
+  <div 
+    className="fixed inset-0 z-40"
+    onClick={() => setIsDrawerOpen(false)} // Cierra el drawer al hacer clic fuera
+  >
+    <div
+      className="absolute top-16 right-4 z-50 bg-slate-50 shadow-lg rounded-lg p-4 w-48"
+      onClick={(e) => e.stopPropagation()} // Evita que el clic dentro del drawer lo cierre
+    >
+      <div className="flex flex-col gap-2">
+        <Link
+          to="/profile"
+          className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-all"
+          onClick={() => setIsDrawerOpen(false)} // Cierra el drawer después de hacer clic en un enlace
+        >
+          <FaUserCircle className="text-xl" />
+          <span className="text-sm font-medium">Perfil</span>
+        </Link>
+        <hr className="my-2 border-gray-200" /> {/* Línea divisoria */}
+        {isAuthenticated && (
+          <button
+            className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-all cursor-pointer"
+            onClick={() => {
+              setShowModal(true);
+              setIsDrawerOpen(false); // Cierra el drawer antes de abrir el modal
+            }}
+          >
+            <FaSignOutAlt className="text-xl" />
+            <span className="text-sm font-medium">Cerrar sesión</span>
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+
+      {/* Modal de confirmación reutilizable */}
+      <ConfirmationModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleLogout}
+        title="¿Estás seguro de cerrar sesión?"
+        confirmText="Cerrar sesión"
+        cancelText="Cancelar"
+      />
     </>
   );
 }
