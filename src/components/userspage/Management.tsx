@@ -188,7 +188,7 @@ const Management: React.FC = () => {
                   <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 </div>
                 <Link
-                  to="/add-user"
+                  to="/register"
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm"
                 >
                   <FaUserPlus /> Nuevo
