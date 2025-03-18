@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Users from '../service/Users';
-import Navbar from '../common/Navbar';
-import { SidebarItems } from '../common/SidebarItems';
-import { UserCircle } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import Users from "../service/Users";
+import Navbar from "../common/Navbar";
+import { SidebarItems } from "../common/SidebarItems";
+import { UserCircle } from "lucide-react";
 
 interface UserProfile {
   id: number;
@@ -21,76 +21,71 @@ function Profile() {
 
   const fetchProfileInfo = async () => {
     try {
-      const token = localStorage.getItem('token') ?? '';
-
+      const token = localStorage.getItem("token") ?? "";
       if (!token) {
-        console.error('No authentication token found.');
+        console.error("No authentication token found.");
         return;
       }
 
       const response: UserProfile = await Users.getYourProfile(token);
-      console.log('Perfil obtenido:', response);
-
+      console.log("Perfil obtenido:", response);
       setProfileInfo(response);
     } catch (error) {
-      console.error('Error fetching profile information:', error);
+      console.error("Error fetching profile information:", error);
     }
   };
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-gray-100 font-sans">
       <Navbar />
-      <div className="flex min-h-screen bg-gray-100">
-        {/* Sidebar */}
+      <div className="flex flex-1">
         <SidebarItems />
-
-        {/* Contenido principal */}
-        <div className="flex-1 flex flex-col items-center justify-start pt-20 p-6">
-          <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg text-center transform transition duration-300 hover:shadow-2xl">
-            {/* Ícono de usuario */}
-            <div className="flex justify-center">
-              <UserCircle size={90} className="text-gray-600 mb-4" />
-            </div>
-
-            {/* Nombre del usuario */}
-            <h2 className="text-3xl font-semibold text-gray-800 mb-2">
-              {profileInfo?.name ?? 'Cargando...'}
-            </h2>
-
+        <main className="flex-1 p-6 max-w-5xl mx-auto">
+          <div className="bg-white rounded-xl shadow-md p-6 mt-10 max-w-md mx-auto">
             {profileInfo ? (
               <>
-                {/* Email */}
-                <p className="text-lg text-gray-700 mb-4">
-                  <strong>Email:</strong> {profileInfo.email}
-                </p>
-
-                {/* Rol del usuario */}
-                <p className="text-lg font-medium">
-                  <span
-                    className={`px-4 py-2 rounded-full text-white text-sm tracking-wide ${
-                      profileInfo.role === 'ADMIN' ? 'bg-blue-600' : 'bg-green-600'
-                    }`}
-                  >
-                    {profileInfo.role === 'ADMIN' ? 'Administrador' : 'Usuario'}
-                  </span>
-                </p>
-
-                {/* Botón de actualizar perfil */}
-                {profileInfo.role === 'ADMIN' && (
-                  <Link to={`/update-user/${profileInfo.id}`}>
-                    <button className="mt-6 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-transform transform hover:scale-105 shadow-md">
-                      Actualizar Perfil
-                    </button>
-                  </Link>
+                <div className="flex justify-center mb-4">
+                  <UserCircle className="w-20 h-20 text-gray-600 text-2xl" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                  {profileInfo.name}
+                </h2>
+                <div className="space-y-4">
+                  <p className="text-gray-700 text-center">
+                    <span className="font-medium">Email:</span> {profileInfo.email}
+                  </p>
+                  <p className="text-gray-700 text-center">
+                    <span
+                      className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                        profileInfo.role === "ADMIN"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}
+                    >
+                      {profileInfo.role === "ADMIN" ? "Administrador" : "Usuario"}
+                    </span>
+                  </p>
+                </div>
+                {profileInfo.role === "ADMIN" && (
+                  <div className="mt-6 flex justify-center">
+                    <Link to={`/update-user/${profileInfo.id}`}>
+                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm">
+                        Actualizar Perfil
+                      </button>
+                    </Link>
+                  </div>
                 )}
               </>
             ) : (
-              <p className="text-gray-500">Cargando perfil...</p>
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <p className="mt-2 text-gray-600">Cargando perfil...</p>
+              </div>
             )}
           </div>
-        </div>
+        </main>
       </div>
-    </>
+    </div>
   );
 }
 

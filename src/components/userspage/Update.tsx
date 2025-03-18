@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Users from "../service/Users";
 import Navbar from "../common/Navbar";
+import { SidebarItems } from "../common/SidebarItems";
+import SuccessModal from "../modals/SuccessModal";
 
 function Update() {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ function Update() {
 
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   useEffect(() => {
     if (userId) {
@@ -29,13 +32,12 @@ function Update() {
         console.error("❌ No authentication token found.");
         return;
       }
-  
+
       const response = await Users.getUserById(userId, token);
-      console.log("✅ API Response:", response); // Verifica la estructura de la respuesta
-  
-      // ✅ Ahora accedemos correctamente a `response.user`
+      console.log("✅ API Response:", response);
+
       if (response && response.user) {
-        const { name = "", email = "", role = "" } = response.user; 
+        const { name = "", email = "", role = "" } = response.user;
         setUserData({ name, email, role });
         setLoading(false);
       } else {
@@ -46,10 +48,6 @@ function Update() {
       setLoading(false);
     }
   };
-  
-  
-
-
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -62,102 +60,150 @@ function Update() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const confirmUpdate = window.confirm("Are you sure you want to update this user?");
-      if (confirmUpdate) {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("No authentication token found.");
-          return;
-        }
-
-        if (!userId) {
-          console.error("❌ userId is undefined");
-          return;
-        }
-
-        setUpdating(true);
-        await Users.updateUser(Number(userId), userData, token);
-        console.log("✅ User updated");
-        navigate("/admin/user-management");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("No se encontró un token de autenticación.");
+        return;
       }
+
+      if (!userId) {
+        console.error("❌ userId is undefined");
+        return;
+      }
+
+      setUpdating(true);
+      await Users.updateUser(Number(userId), userData, token);
+      console.log("✅ User updated");
+      setUpdating(false);
+      setIsSuccessModalOpen(true);
+
+      // Cerrar la modal y redirigir después de 2 segundos
+      setTimeout(() => {
+        setIsSuccessModalOpen(false);
+        navigate("/admin/user-management");
+      }, 2000);
     } catch (error) {
       console.error("❌ Error updating user profile:", error);
-      alert("Error updating user");
-    } finally {
+      alert("Error al actualizar el usuario");
       setUpdating(false);
     }
   };
 
-  if (loading)
+  const handleCancel = () => {
+    navigate("/admin/user-management");
+  };
+
+  const closeSuccessModal = () => {
+    setIsSuccessModalOpen(false);
+    navigate("/admin/user-management");
+  };
+
+  if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-600 text-lg">Cargando datos...</p>
-      </div>
-    );
-
-  return (
-    <>
-      <Navbar />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-            Actualizar Usuario
-          </h2>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">
-                Nombre:
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={userData.name}
-                onChange={handleInputChange}
-                className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+      <div className="flex flex-col h-screen bg-gray-50 font-sans">
+        <Navbar />
+        <div className="flex flex-1">
+          <SidebarItems />
+          <main className="flex-1 flex items-center justify-center p-6">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+              <p className="mt-2 text-gray-600">Cargando datos...</p>
             </div>
-
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">
-                Email:
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={userData.email}
-                onChange={handleInputChange}
-                className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                disabled
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">
-                Rol:
-              </label>
-              <select
-                name="role"
-                value={userData.role}
-                onChange={handleInputChange}
-                className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="USER">Usuario</option>
-                <option value="ADMIN">Administrador</option>
-              </select>
-            </div>
-
-            <button
-              type="submit"
-              disabled={updating}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition disabled:bg-gray-400"
-            >
-              {updating ? "Actualizando..." : "Actualizar"}
-            </button>
-          </form>
+          </main>
         </div>
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-100 font-sans">
+      <Navbar />
+      <div className="flex flex-1">
+        <SidebarItems />
+        <main className="flex-1 p-6 max-w-5xl mx-auto">
+          <div className="bg-white rounded-xl shadow-md p-6 mt-10 max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+              Actualizar Usuario
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={userData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 placeholder-gray-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={userData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                  disabled
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">
+                  Rol
+                </label>
+                <select
+                  name="role"
+                  value={userData.role}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                >
+                  <option value="USER">Usuario</option>
+                  <option value="ADMIN">Administrador</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-all duration-200 shadow-sm"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  {updating ? (
+                    <>
+                      <div className="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                      Actualizando...
+                    </>
+                  ) : (
+                    "Actualizar"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Success Modal */}
+          <SuccessModal
+            isOpen={isSuccessModalOpen}
+            onClose={closeSuccessModal}
+            title="Usuario Actualizado con Éxito"
+          />
+        </main>
+      </div>
+    </div>
   );
 }
 
