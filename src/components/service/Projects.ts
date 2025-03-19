@@ -1,27 +1,15 @@
 import axios from "axios";
-import { User } from "./Users";
-
-interface Proyecto {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  responsable: User;
-  fechaInicio: string;
-  fechaFin: string;
-  estado: "SIN_INICIAR" | "EN_PROGRESO" | "FINALIZADO" | "CANCELADO";
-}
-
+import { IProyecto } from "../projectspage/interface/IProjects";
 
 class Projects {
   private static readonly BASE_URL = "http://localhost:8080/api/v1/proyectos";
 
   /** 🔹 Obtener todos los proyectos */
-  static async getAllProjects(token: string): Promise<Proyecto[]> {
+  static async getAllProjects(token: string): Promise<IProyecto[]> {
     try {
-      const response = await axios.get<Proyecto[]>(this.BASE_URL, {
+      const response = await axios.get<IProyecto[]>(this.BASE_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       console.log("📡 Proyectos obtenidos:", response.data);
       return response.data;
     } catch (error) {
@@ -31,12 +19,12 @@ class Projects {
   }
 
   /** 🔹 Obtener un proyecto por ID */
-  static async getProjectById(id: number, token: string): Promise<Proyecto | null> {
+  static async getProjectById(id: number, token: string): Promise<IProyecto | null> {
     try {
-      const response = await axios.get<Proyecto>(`${this.BASE_URL}/${id}`, {
+      const response = await axios.get<IProyecto>(`${this.BASE_URL}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      console.log("📡 Proyecto obtenido:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -45,40 +33,53 @@ class Projects {
   }
 
   /** 🔹 Crear o actualizar un proyecto */
-  static async createOrUpdateProject(proyecto: Proyecto, token: string): Promise<void> {
+  static async CreateOrUpdate(projectData: IProyecto, token: string): Promise<IProyecto> {
     try {
-      await axios.post(this.BASE_URL, proyecto, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("✅ Proyecto guardado correctamente");
+      const response = await axios.post<IProyecto>(
+        `${Projects.BASE_URL}`,
+        projectData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
     } catch (error) {
       this.handleError(error);
+      throw error; // Re-lanzamos el error para manejarlo en el componente
     }
   }
 
-  /** 🔹 Eliminar un proyecto por ID */
+  /** 🔹 Eliminar un proyecto */
   static async deleteProject(id: number, token: string): Promise<void> {
     try {
       await axios.delete(`${this.BASE_URL}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       console.log(`🗑️ Proyecto con ID ${id} eliminado`);
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  /** 🔴 Manejo de errores */
-  private static handleError(error: unknown): void {
+  /** 🔹 Función auxiliar para manejar errores */
+  private static handleError(error: unknown): never {
     if (axios.isAxiosError(error)) {
-      console.error("❌ Error en la petición:", error.response?.data || error.message);
+      const message = error.response?.data?.message || error.message;
+      console.error("❌ Error en la petición:", {
+        status: error.response?.status,
+        data: error.response?.data,
+        message,
+      });
+      if (error.response?.status === 403) {
+        throw new Error("No tienes permisos para realizar esta acción.");
+      }
+      throw new Error(message);
     } else {
       console.error("❌ Error inesperado:", error);
+      throw new Error("Error inesperado");
     }
   }
 }
