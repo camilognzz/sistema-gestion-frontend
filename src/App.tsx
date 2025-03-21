@@ -8,6 +8,7 @@ import Profile from './components/userspage/Profile';
 import Project from "./components/projectspage/Project";
 import CreateProject from "./components/projectspage/CreateProject";
 import UpdateProject from "./components/projectspage/UpdateProject";
+import { Contact } from "./components/contactspage/Contact";
 
 
 function App() {
@@ -19,9 +20,10 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/api/v1/proyectos" element={<Project />}/>
-            <Route path="/create-project" element={<CreateProject />}/>
+            <Route path="/api/v1/proyectos" element={<Project />} />
+            <Route path="/create-project" element={<CreateProject />} />
             <Route path="/update-project/:projectId" element={<UpdateProject />} />
+            <Route path="/contactos" element={<Contact />} />
 
 
             {/* Admin-only routes */}
