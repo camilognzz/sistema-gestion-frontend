@@ -8,7 +8,7 @@ import Profile from './components/userspage/Profile';
 import Project from "./components/projectspage/Project";
 import CreateProject from "./components/projectspage/CreateProject";
 import UpdateProject from "./components/projectspage/UpdateProject";
-import { Contact } from "./components/contactspage/Contact";
+import  Contact  from "./components/contactspage/Contact";
 
 
 function App() {

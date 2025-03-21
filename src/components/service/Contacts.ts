@@ -2,7 +2,7 @@ import axios from "axios";
 import { IContacto } from "../contactspage/interface/IContacto";
 
 class Contacts {
-  private static readonly BASE_URL = "http://localhost:8080/api/v1/contactos";
+  private static readonly BASE_URL = "http://localhost:8080/api/v1/contactos-estrategicos";
 
   /** 🔹 Obtener todos los contactos */
   static async getAllContacts(token: string): Promise<IContacto[]> {
