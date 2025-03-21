@@ -286,7 +286,7 @@ const Contact: React.FC = () => {
                                 <FaEye className="w-5 h-5" />
                               </button>
                               <Link
-                                to={`/update-contact/${contact.id}`}
+                                to={`/actualizar-contacto/${contact.id}`}
                                 className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
                                 title="Editar"
                               >

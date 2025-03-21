@@ -73,7 +73,7 @@ class Contacts {
   }
 
   /** 🔹 Actualizar un contacto (Alineado con Contacts.ts) */
-  static async updateProject(
+  static async updateContact(
     contactId: number,
     contactData: IContacto,
     token: string

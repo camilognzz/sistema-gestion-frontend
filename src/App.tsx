@@ -10,6 +10,7 @@ import CreateProject from "./components/projectspage/CreateProject";
 import UpdateProject from "./components/projectspage/UpdateProject";
 import  Contact  from "./components/contactspage/Contact";
 import  CreateContact  from "./components/contactspage/CreateContact";
+import  UpdateContact  from "./components/contactspage/UpdateContact";
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/update-project/:projectId" element={<UpdateProject />} />
             <Route path="/contactos" element={<Contact />} />
             <Route path="/crear-contacto" element={<CreateContact />} />
+            <Route path="/actualizar-contacto/:contactId" element={<UpdateContact />} />
 
 
             {/* Admin-only routes */}
