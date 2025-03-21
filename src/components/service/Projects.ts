@@ -32,8 +32,8 @@ class Projects {
     }
   }
 
-  /** 🔹 Crear o actualizar un proyecto */
-  static async CreateOrUpdate(projectData: IProyecto, token: string): Promise<IProyecto> {
+  /** 🔹 Crear un proyecto */
+  static async createProject(projectData: IProyecto, token: string): Promise<IProyecto> {
     try {
       const response = await axios.post<IProyecto>(
         `${Projects.BASE_URL}`,
@@ -45,10 +45,11 @@ class Projects {
           },
         }
       );
+      console.log("✅ Proyecto creado:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
-      throw error; // Re-lanzamos el error para manejarlo en el componente
+      throw error;
     }
   }
 
@@ -61,10 +62,37 @@ class Projects {
       console.log(`🗑️ Proyecto con ID ${id} eliminado`);
     } catch (error) {
       this.handleError(error);
+      throw error;
     }
   }
 
-  /** 🔹 Función auxiliar para manejar errores */
+  /** 🔹 Actualizar un proyecto (Alineado con Users.ts) */
+  static async updateProject(
+    projectId: number,
+    projectData: IProyecto,
+    token: string
+  ): Promise<IProyecto> {
+    try {
+      console.log("🔍 Enviando solicitud de actualización con datos:", projectData);
+      const response = await axios.put<IProyecto>(
+        `${this.BASE_URL}/${projectId}`,
+        projectData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("✅ Respuesta del servidor:", response.data);
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
+  /** 🔹 Función auxiliar para manejar errores (Alineado con Users.ts) */
   private static handleError(error: unknown): never {
     if (axios.isAxiosError(error)) {
       const message = error.response?.data?.message || error.message;
@@ -73,13 +101,10 @@ class Projects {
         data: error.response?.data,
         message,
       });
-      if (error.response?.status === 403) {
-        throw new Error("No tienes permisos para realizar esta acción.");
-      }
       throw new Error(message);
     } else {
-      console.error("❌ Error inesperado:", error);
-      throw new Error("Error inesperado");
+      console.error("❌ Error desconocido:", error);
+      throw new Error("Error desconocido");
     }
   }
 }

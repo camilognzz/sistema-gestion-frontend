@@ -6,7 +6,7 @@ import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import { FaSave, FaArrowLeft } from "react-icons/fa";
 import SuccessModal from "../modals/SuccessModal";
-import { IProyecto } from "./interface/IProjects"; 
+import { IProyecto } from "./interface/IProjects";
 
 const CreateProject: React.FC = () => {
   const navigate = useNavigate();
@@ -62,7 +62,6 @@ const CreateProject: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      console.log("Token para crear proyecto:", token);
       if (!token) {
         setError("No se encontró un token de autenticación.");
         setIsLoading(false);
@@ -78,6 +77,7 @@ const CreateProject: React.FC = () => {
 
       const startDate = new Date(formData.fechaInicio);
       const endDate = new Date(formData.fechaFin);
+
       if (endDate <= startDate) {
         setError("La fecha de fin debe ser mayor que la fecha de inicio.");
         setIsLoading(false);
@@ -93,17 +93,14 @@ const CreateProject: React.FC = () => {
         estado: formData.estado,
       };
 
-      console.log("Enviando proyecto:", project);
-      await Projects.CreateOrUpdate(project, token);
+      console.log("Datos enviados al backend:", JSON.stringify(project, null, 2));
+      const response = await Projects.createProject(project, token);
+      console.log("Respuesta del backend:", JSON.stringify(response, null, 2));
       setIsLoading(false);
       setIsSuccessModalOpen(true);
     } catch (err) {
       console.error("Error al crear proyecto:", err);
-      if (err instanceof Error) {
-        setError(err.message || "Error al crear el proyecto. Verifica el token o la configuración del servidor.");
-      } else {
-        setError("Error desconocido al crear el proyecto.");
-      }
+      setError("Error desconocido al crear el proyecto.");
       setIsLoading(false);
     }
   };

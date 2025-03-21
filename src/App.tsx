@@ -7,6 +7,7 @@ import Management from './components/userspage/Management';
 import Profile from './components/userspage/Profile';
 import Project from "./components/projectspage/Project";
 import CreateProject from "./components/projectspage/CreateProject";
+import UpdateProject from "./components/projectspage/UpdateProject";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/api/v1/proyectos" element={<Project />}/>
             <Route path="/create-project" element={<CreateProject />}/>
+            <Route path="/update-project/:projectId" element={<UpdateProject />} />
 
 
             {/* Admin-only routes */}

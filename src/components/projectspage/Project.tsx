@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Projects from "../service/Projects"; // Adjust the import path as needed
+import Projects from "../service/Projects";
 import { FaPlus, FaTrash, FaEdit, FaChevronLeft, FaChevronRight, FaSearch, FaFilePdf, FaFileExcel, FaEye } from "react-icons/fa";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
@@ -11,25 +11,27 @@ import { saveAs } from "file-saver";
 import { Dialog, DialogBackdrop, DialogPanel, Transition } from "@headlessui/react";
 import SuccessModal from "../modals/SuccessModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
+import { IProyecto } from "./interface/IProjects";
 
-interface Proyecto {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  responsable: { id: number; name: string; email: string; role: string };
-  fechaInicio: string;
-  fechaFin: string;
-  estado: "SIN_INICIAR" | "EN_PROGRESO" | "FINALIZADO" | "CANCELADO";
-}
+// Función para formatear la fecha de "YYYY-MM-DD" a "DD/MM/YYYY"
+const formatDate = (dateString: string): string => {
+  const [year, month, day] = dateString.split("-");
+  return `${day}/${month}/${year}`;
+};
+
+// Función para formatear el estado, reemplazando guiones por espacios
+const formatEstado = (estado: string): string => {
+  return estado.replace(/_/g, " ");
+};
 
 const Project: React.FC = () => {
-  const [projects, setProjects] = useState<Proyecto[]>([]);
-  const [filteredProjects, setFilteredProjects] = useState<Proyecto[]>([]);
+  const [projects, setProjects] = useState<IProyecto[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<IProyecto[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedProject, setSelectedProject] = useState<Proyecto | null>(null);
+  const [selectedProject, setSelectedProject] = useState<IProyecto | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -59,7 +61,7 @@ const Project: React.FC = () => {
         setError("No se encontró un token de autenticación.");
         return;
       }
-      const projectsResponse: Proyecto[] = await Projects.getAllProjects(token);
+      const projectsResponse: IProyecto[] = await Projects.getAllProjects(token);
       if (Array.isArray(projectsResponse)) {
         setProjects(projectsResponse);
         setFilteredProjects(projectsResponse);
@@ -78,7 +80,8 @@ const Project: React.FC = () => {
     }
   };
 
-  const deleteProject = (projectId: number): void => {
+  const deleteProject = (projectId: number | undefined): void => {
+    if (projectId === undefined) return;
     setProjectIdToDelete(projectId);
     setIsDeleteModalOpen(true);
   };
@@ -112,7 +115,7 @@ const Project: React.FC = () => {
     setIsSuccessModalOpen(false);
   };
 
-  const openModal = (project: Proyecto) => {
+  const openModal = (project: IProyecto) => {
     setSelectedProject(project);
     setIsModalOpen(true);
   };
@@ -145,12 +148,12 @@ const Project: React.FC = () => {
       startY: 20,
       head: [["ID", "Nombre", "Responsable", "Estado", "Fecha Inicio", "Fecha Fin"]],
       body: projects.map((project) => [
-        project.id,
+        project.id ?? "N/A",
         project.nombre,
         project.responsable.name,
-        project.estado,
-        new Date(project.fechaInicio).toLocaleDateString(),
-        new Date(project.fechaFin).toLocaleDateString(),
+        formatEstado(project.estado),
+        formatDate(project.fechaInicio),
+        formatDate(project.fechaFin),
       ]),
     });
     doc.save("reporte_proyectos.pdf");
@@ -158,12 +161,12 @@ const Project: React.FC = () => {
 
   const exportToExcel = () => {
     const filteredProjects = projects.map(({ id, nombre, responsable, estado, fechaInicio, fechaFin }) => ({
-      id,
+      id: id ?? "N/A",
       nombre,
       responsable: responsable.name,
-      estado,
-      fechaInicio: new Date(fechaInicio).toLocaleDateString(),
-      fechaFin: new Date(fechaFin).toLocaleDateString(),
+      estado: formatEstado(estado),
+      fechaInicio: formatDate(fechaInicio),
+      fechaFin: formatDate(fechaFin),
     }));
     const ws = XLSX.utils.json_to_sheet(filteredProjects);
     const wb = XLSX.utils.book_new();
@@ -244,15 +247,15 @@ const Project: React.FC = () => {
                       {currentProjects.length > 0 ? (
                         currentProjects.map((project) => (
                           <tr
-                            key={project.id}
+                            key={project.id ?? Math.random()}
                             className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
                           >
-                            <td className="py-4 px-6">{project.id}</td>
+                            <td className="py-4 px-6">{project.id ?? "N/A"}</td>
                             <td className="py-4 px-6">{project.nombre}</td>
                             <td className="py-4 px-6">{project.responsable.name}</td>
                             <td className="py-4 px-6">
                               <span
-                                className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                                className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
                                   project.estado === "FINALIZADO"
                                     ? "bg-green-100 text-green-800"
                                     : project.estado === "EN_PROGRESO"
@@ -262,11 +265,11 @@ const Project: React.FC = () => {
                                     : "bg-gray-100 text-gray-800"
                                 }`}
                               >
-                                {project.estado}
+                                {formatEstado(project.estado)}
                               </span>
                             </td>
-                            <td className="py-4 px-6">{new Date(project.fechaInicio).toLocaleDateString()}</td>
-                            <td className="py-4 px-6">{new Date(project.fechaFin).toLocaleDateString()}</td>
+                            <td className="py-4 px-6">{formatDate(project.fechaInicio)}</td>
+                            <td className="py-4 px-6">{formatDate(project.fechaFin)}</td>
                             <td className="py-4 px-6 flex justify-center gap-4">
                               <button
                                 onClick={() => openModal(project)}
@@ -276,7 +279,7 @@ const Project: React.FC = () => {
                                 <FaEye className="w-5 h-5" />
                               </button>
                               <Link
-                                to={`/update-project/${project.id}`}
+                                to={`/update-project/${project.id ?? ""}`}
                                 className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
                                 title="Editar"
                               >
@@ -286,6 +289,7 @@ const Project: React.FC = () => {
                                 onClick={() => deleteProject(project.id)}
                                 className="text-red-500 hover:text-red-700 transition-colors duration-200 cursor-pointer"
                                 title="Eliminar"
+                                disabled={project.id === undefined}
                               >
                                 <FaTrash className="w-5 h-5" />
                               </button>
@@ -362,16 +366,16 @@ const Project: React.FC = () => {
                       <DialogPanel className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
                         <h3 className="text-xl font-semibold text-gray-900 mb-4">Detalles del Proyecto</h3>
                         <div className="space-y-3 text-gray-700">
-                          <p><span className="font-medium">ID:</span> {selectedProject.id}</p>
+                          <p><span className="font-medium">ID:</span> {selectedProject.id ?? "N/A"}</p>
                           <p><span className="font-medium">Nombre:</span> {selectedProject.nombre}</p>
                           <p><span className="font-medium">Descripción:</span> {selectedProject.descripcion}</p>
                           <p><span className="font-medium">Responsable:</span> {selectedProject.responsable.name}</p>
-                          <p><span className="font-medium">Fecha Inicio:</span> {new Date(selectedProject.fechaInicio).toLocaleDateString()}</p>
-                          <p><span className="font-medium">Fecha Fin:</span> {new Date(selectedProject.fechaFin).toLocaleDateString()}</p>
+                          <p><span className="font-medium">Fecha Inicio:</span> {formatDate(selectedProject.fechaInicio)}</p>
+                          <p><span className="font-medium">Fecha Fin:</span> {formatDate(selectedProject.fechaFin)}</p>
                           <p>
                             <span className="font-medium">Estado:</span>{" "}
                             <span
-                              className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                              className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
                                 selectedProject.estado === "FINALIZADO"
                                   ? "bg-green-100 text-green-800"
                                   : selectedProject.estado === "EN_PROGRESO"
@@ -381,7 +385,7 @@ const Project: React.FC = () => {
                                   : "bg-gray-100 text-gray-800"
                               }`}
                             >
-                              {selectedProject.estado}
+                              {formatEstado(selectedProject.estado)}
                             </span>
                           </p>
                         </div>
