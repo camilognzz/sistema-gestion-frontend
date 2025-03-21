@@ -4,7 +4,6 @@ import Projects from "../service/Projects";
 import Users, { User } from "../service/Users";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
-import { FaSave, FaArrowLeft } from "react-icons/fa";
 import SuccessModal from "../modals/SuccessModal";
 import { IProyecto } from "./interface/IProjects";
 
@@ -176,7 +175,7 @@ const CreateProject: React.FC = () => {
                     value={formData.responsableId}
                     onChange={handleChange}
                     required
-                    className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                    className="mt-1 w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
                     disabled={users.length === 0}
                   >
                     <option value="">Seleccione un responsable</option>
@@ -199,7 +198,7 @@ const CreateProject: React.FC = () => {
                     value={formData.fechaInicio}
                     onChange={handleChange}
                     required
-                    className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                    className="mt-1 w-full px-4 py-2 border  border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
                   />
                 </div>
 
@@ -214,7 +213,7 @@ const CreateProject: React.FC = () => {
                     value={formData.fechaFin}
                     onChange={handleChange}
                     required
-                    className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                    className="mt-1 w-full px-4 py-2  border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
                   />
                 </div>
 
@@ -228,7 +227,7 @@ const CreateProject: React.FC = () => {
                     value={formData.estado}
                     onChange={handleChange}
                     required
-                    className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                    className="mt-1 w-full px-4 py-2  cursor-pointer border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
                   >
                     <option value="SIN_INICIAR">Sin Iniciar</option>
                     <option value="EN_PROGRESO">En Progreso</option>
@@ -241,21 +240,21 @@ const CreateProject: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-200"
+                    className="flex items-center gap-2 px-4 py-2 cursor-pointer bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-200"
                     disabled={isLoading}
                   >
-                    <FaArrowLeft /> Cancelar
+                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200"
+                    className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200"
                     disabled={isLoading || users.length === 0}
                   >
                     {isLoading ? (
                       <div className="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                     ) : (
                       <>
-                        <FaSave /> Guardar
+                         Guardar
                       </>
                     )}
                   </button>

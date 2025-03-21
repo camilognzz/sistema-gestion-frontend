@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Projects from "../service/Projects";
-import { FaPlus, FaTrash, FaEdit, FaChevronLeft, FaChevronRight, FaSearch, FaFilePdf, FaFileExcel, FaEye } from "react-icons/fa";
+import {
+  FaPlus,
+  FaTrash,
+  FaEdit,
+  FaChevronLeft,
+  FaChevronRight,
+  FaSearch,
+  FaFilePdf,
+  FaFileExcel,
+  FaEye,
+} from "react-icons/fa";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import jsPDF from "jspdf";
@@ -148,31 +158,35 @@ const Project: React.FC = () => {
       startY: 20,
       head: [["ID", "Nombre", "Responsable", "Estado", "Fecha Inicio", "Fecha Fin"]],
       body: projects.map((project) => [
-        project.id ?? "N/A",
-        project.nombre,
-        project.responsable.name,
-        formatEstado(project.estado),
-        formatDate(project.fechaInicio),
-        formatDate(project.fechaFin),
+        project.id !== undefined ? project.id.toString() : "N/A", // Convertimos a string y manejamos undefined
+        project.nombre ?? "N/A",
+        project.responsable?.name ?? "N/A",
+        formatEstado(project.estado ?? "N/A"),
+        formatDate(project.fechaInicio ?? "N/A"),
+        formatDate(project.fechaFin ?? "N/A"),
       ]),
     });
     doc.save("reporte_proyectos.pdf");
   };
 
   const exportToExcel = () => {
-    const filteredProjects = projects.map(({ id, nombre, responsable, estado, fechaInicio, fechaFin }) => ({
-      id: id ?? "N/A",
-      nombre,
-      responsable: responsable.name,
-      estado: formatEstado(estado),
-      fechaInicio: formatDate(fechaInicio),
-      fechaFin: formatDate(fechaFin),
-    }));
+    const filteredProjects = projects.map(
+      ({ id, nombre, responsable, estado, fechaInicio, fechaFin }) => ({
+        id: id !== undefined ? id.toString() : "N/A", // Convertimos a string y manejamos undefined
+        nombre: nombre ?? "N/A",
+        responsable: responsable?.name ?? "N/A",
+        estado: formatEstado(estado ?? "N/A"),
+        fechaInicio: formatDate(fechaInicio ?? "N/A"),
+        fechaFin: formatDate(fechaFin ?? "N/A"),
+      })
+    );
     const ws = XLSX.utils.json_to_sheet(filteredProjects);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Proyectos");
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const data = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const data = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
     saveAs(data, "reporte_proyectos.xlsx");
   };
 
@@ -364,14 +378,33 @@ const Project: React.FC = () => {
                       leaveTo="opacity-0 scale-95"
                     >
                       <DialogPanel className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-4">Detalles del Proyecto</h3>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                          Detalles del Proyecto
+                        </h3>
                         <div className="space-y-3 text-gray-700">
-                          <p><span className="font-medium">ID:</span> {selectedProject.id ?? "N/A"}</p>
-                          <p><span className="font-medium">Nombre:</span> {selectedProject.nombre}</p>
-                          <p><span className="font-medium">Descripción:</span> {selectedProject.descripcion}</p>
-                          <p><span className="font-medium">Responsable:</span> {selectedProject.responsable.name}</p>
-                          <p><span className="font-medium">Fecha Inicio:</span> {formatDate(selectedProject.fechaInicio)}</p>
-                          <p><span className="font-medium">Fecha Fin:</span> {formatDate(selectedProject.fechaFin)}</p>
+                          <p>
+                            <span className="font-medium">ID:</span>{" "}
+                            {selectedProject.id ?? "N/A"}
+                          </p>
+                          <p>
+                            <span className="font-medium">Nombre:</span> {selectedProject.nombre}
+                          </p>
+                          <p>
+                            <span className="font-medium">Descripción:</span>{" "}
+                            {selectedProject.descripcion}
+                          </p>
+                          <p>
+                            <span className="font-medium">Responsable:</span>{" "}
+                            {selectedProject.responsable.name}
+                          </p>
+                          <p>
+                            <span className="font-medium">Fecha Inicio:</span>{" "}
+                            {formatDate(selectedProject.fechaInicio)}
+                          </p>
+                          <p>
+                            <span className="font-medium">Fecha Fin:</span>{" "}
+                            {formatDate(selectedProject.fechaFin)}
+                          </p>
                           <p>
                             <span className="font-medium">Estado:</span>{" "}
                             <span

@@ -5,16 +5,10 @@ import Users, { User } from "../service/Users";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
-import { IProyecto } from "./interface/IProjects"; // Ajusta la ruta según tu estructura
+import { IProyecto } from "./interface/IProjects";
 
-// Función auxiliar para formatear fechas al formato YYYY-MM-DD
-const formatDateForInput = (dateString: string): string => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
+// Eliminamos formatDateForInput porque no necesitamos transformar la fecha
+// ya que el backend la envía en formato "YYYY-MM-DD" y el input la acepta directamente
 
 const UpdateProject: React.FC = () => {
   const navigate = useNavigate();
@@ -58,8 +52,8 @@ const UpdateProject: React.FC = () => {
           nombre: response.nombre,
           descripcion: response.descripcion,
           responsable: response.responsable,
-          fechaInicio: formatDateForInput(response.fechaInicio),
-          fechaFin: formatDateForInput(response.fechaFin),
+          fechaInicio: response.fechaInicio, // Usamos directamente el valor del backend
+          fechaFin: response.fechaFin,       // Usamos directamente el valor del backend
           estado: response.estado,
         });
         setLoading(false);
@@ -136,7 +130,7 @@ const UpdateProject: React.FC = () => {
       const updatedProject: IProyecto = {
         nombre: projectData.nombre,
         descripcion: projectData.descripcion,
-        responsable: { id: projectData.responsable.id }, // Solo el ID
+        responsable: { id: projectData.responsable.id },
         fechaInicio: projectData.fechaInicio,
         fechaFin: projectData.fechaFin,
         estado: projectData.estado,
@@ -152,7 +146,7 @@ const UpdateProject: React.FC = () => {
         setIsSuccessModalOpen(false);
         navigate("/api/v1/proyectos");
       }, 2000);
-    } catch (error: unknown) { // Cambiamos 'any' por 'unknown'
+    } catch (error: unknown) {
       console.error("❌ Error updating project:", error);
       setUpdating(false);
     }
@@ -238,7 +232,7 @@ const UpdateProject: React.FC = () => {
                   name="responsableId"
                   value={projectData.responsable.id}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                  className="w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
                   required
                 >
                   <option value="">Seleccione un responsable</option>
@@ -286,7 +280,7 @@ const UpdateProject: React.FC = () => {
                   name="estado"
                   value={projectData.estado}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                  className="w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
                   required
                 >
                   <option value="SIN_INICIAR">Sin Iniciar</option>
