@@ -9,6 +9,7 @@ import Project from "./components/projectspage/Project";
 import CreateProject from "./components/projectspage/CreateProject";
 import UpdateProject from "./components/projectspage/UpdateProject";
 import  Contact  from "./components/contactspage/Contact";
+import  CreateContact  from "./components/contactspage/CreateContact";
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Route path="/create-project" element={<CreateProject />} />
             <Route path="/update-project/:projectId" element={<UpdateProject />} />
             <Route path="/contactos" element={<Contact />} />
+            <Route path="/crear-contacto" element={<CreateContact />} />
 
 
             {/* Admin-only routes */}

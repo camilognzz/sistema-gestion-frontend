@@ -153,7 +153,7 @@ const Contact: React.FC = () => {
       startY: 20,
       head: [["ID", "Nombre", "Tipo de Contacto", "Teléfono", "Email", "Dirección", "Cargo", "Notas", "Fecha de Registro"]],
       body: contacts.map((contact) => [
-        contact.id.toString(),
+        contact.id?.toString() ?? "N/A",
         contact.nombre,
         contact.tipoContacto,
         contact.telefono,
@@ -170,7 +170,7 @@ const Contact: React.FC = () => {
   const exportToExcel = () => {
     const filteredContactsExcel = contacts.map(
       ({ id, nombre, tipoContacto, telefono, email, direccion, cargo, notas, fechaRegistro }) => ({
-        id: id.toString(),
+        id: id !== undefined ? id.toString() : "N/A",
         nombre,
         tipoContacto,
         telefono,
@@ -213,7 +213,7 @@ const Contact: React.FC = () => {
                   <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 </div>
                 <Link
-                  to="/create-contact"
+                  to="/crear-contacto"
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm"
                 >
                   <FaPlus /> Nuevo
