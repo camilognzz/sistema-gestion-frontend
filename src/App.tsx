@@ -11,6 +11,10 @@ import UpdateProject from "./components/projectspage/UpdateProject";
 import  Contact  from "./components/contactspage/Contact";
 import  CreateContact  from "./components/contactspage/CreateContact";
 import  UpdateContact  from "./components/contactspage/UpdateContact";
+import Volunteer from "./components/volunteerspage/Volunteer";
+import  CreateVolunteer  from "./components/volunteerspage/CreateVolunteer";
+import UpdateVolunteer from "./components/volunteerspage/UpdateVolunteer";
+
 
 
 function App() {
@@ -28,7 +32,9 @@ function App() {
             <Route path="/contactos" element={<Contact />} />
             <Route path="/crear-contacto" element={<CreateContact />} />
             <Route path="/actualizar-contacto/:contactId" element={<UpdateContact />} />
-
+            <Route path="/voluntarios" element={<Volunteer />} />
+            <Route path="/crear-voluntario" element={<CreateVolunteer />} />
+            <Route path="/actualizar-voluntario/:volunteerId" element={<UpdateVolunteer />} />
 
             {/* Admin-only routes */}
             {Users.adminOnly() && (

@@ -51,7 +51,7 @@ class Volunteers {
           },
         }
       );
-      console.log("Contacto creado:", response.data);
+      console.log("Voluntario creado:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);

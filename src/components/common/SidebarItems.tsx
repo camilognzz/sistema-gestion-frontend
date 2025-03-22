@@ -51,7 +51,9 @@ export const SidebarItems = () => {
                 <Link to={"/contactos"}>
                 <SidebarItem icon={<Mail size={20} />} text="Contactos" />
                 </Link>
+                <Link to={"/voluntarios"}>
                 <SidebarItem icon={<UsersIcon size={20} />} text="Voluntarios" />
+                </Link>
                 {profileInfo?.role === "ADMIN" && (
                     <SidebarItem icon={<DollarSign size={20} />} text="Finanzas" />
                 )}
