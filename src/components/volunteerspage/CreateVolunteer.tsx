@@ -186,7 +186,7 @@ const CreateVolunteer: React.FC = () => {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email (Opcional)
+                  Email
                 </label>
                 <input
                   type="email"

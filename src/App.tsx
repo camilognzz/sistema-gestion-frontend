@@ -14,6 +14,7 @@ import  UpdateContact  from "./components/contactspage/UpdateContact";
 import Volunteer from "./components/volunteerspage/Volunteer";
 import  CreateVolunteer  from "./components/volunteerspage/CreateVolunteer";
 import UpdateVolunteer from "./components/volunteerspage/UpdateVolunteer";
+import Financial from "./components/financialspage/Financial";
 
 
 
@@ -42,6 +43,7 @@ function App() {
                 <Route path="/register" element={<Registration />} />
                 <Route path="/admin/user-management" element={<Management />} />
                 <Route path="/update-user/:userId" element={<Update />} />
+                <Route path="/finanzas" element={<Financial />} />
               </>
             )}
 
