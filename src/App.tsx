@@ -15,6 +15,11 @@ import Volunteer from "./components/volunteerspage/Volunteer";
 import  CreateVolunteer  from "./components/volunteerspage/CreateVolunteer";
 import UpdateVolunteer from "./components/volunteerspage/UpdateVolunteer";
 import Financial from "./components/financialspage/Financial";
+import Balance from "./components/financialspage/Balance";
+import CreateTransaction from "./components/financialspage/CreateTransaction";
+import Categories from "./components/financialspage/Categories";
+import CreateCategory from "./components/financialspage/CreateCategory";
+import UpdateCategory from "./components/financialspage/UpdateCategory";
 
 
 
@@ -44,6 +49,11 @@ function App() {
                 <Route path="/admin/user-management" element={<Management />} />
                 <Route path="/update-user/:userId" element={<Update />} />
                 <Route path="/finanzas" element={<Financial />} />
+                <Route path="/balance" element={<Balance />} />
+                <Route path="/crear-transaccion" element={<CreateTransaction />} />
+                <Route path="/categorias" element={<Categories />} />
+                <Route path="/crear-categoria" element={<CreateCategory />} />
+                <Route path="/actualizar-categoria/:categoryId" element={<UpdateCategory />} />
               </>
             )}
 

@@ -28,3 +28,5 @@ export enum TransactionType {
     categoryId: number; // ID de la categoría, ya que el backend espera un ID
     transactionDate: string;
   }
+
+  

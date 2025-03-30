@@ -1,5 +1,3 @@
-// src/service/Financials.ts
-
 import axios from "axios";
 import {
   IFinancialTransaction,
