@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import Financials from "../service/Financials"; // Ajusta la ruta según tu estructura
 import {
   FaPlus,
+  FaTrash,
+  FaEdit,
   FaChevronLeft,
   FaChevronRight,
   FaSearch,
@@ -17,6 +19,8 @@ import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { Dialog, DialogBackdrop, DialogPanel, Transition } from "@headlessui/react";
+import SuccessModal from "../modals/SuccessModal";
+import ConfirmationModal from "../modals/ConfirmationModal";
 import { IFinancialTransaction } from "../financialspage/interface/IFinancial"; // Ajusta la ruta según tu estructura
 
 // Función para formatear la fecha de "YYYY-MM-DD" a "DD/MM/YYYY"
@@ -30,6 +34,13 @@ const formatAmount = (amount: number): string => {
   return `$${amount.toFixed(2)}`;
 };
 
+// Función para traducir el tipo de transacción y asignar color
+const getTransactionTypeStyle = (type: string) => {
+  const translatedType = type === "INCOME" ? "Ingreso" : type === "EXPENSE" ? "Gasto" : type;
+  const className = type === "INCOME" ? "text-green-600" : type === "EXPENSE" ? "text-red-600" : "text-gray-700";
+  return { translatedType, className };
+};
+
 const Financial: React.FC = () => {
   const [transactions, setTransactions] = useState<IFinancialTransaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<IFinancialTransaction[]>([]);
@@ -39,6 +50,9 @@ const Financial: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedTransaction, setSelectedTransaction] = useState<IFinancialTransaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [transactionIdToDelete, setTransactionIdToDelete] = useState<number | null>(null);
   const [balance, setBalance] = useState<number>(0);
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [balanceError, setBalanceError] = useState<string | null>(null);
@@ -112,10 +126,46 @@ const Financial: React.FC = () => {
     } catch (error) {
       console.error("Error fetching balance:", error);
       setBalanceError("Error al obtener el balance. Por favor, intenta de nuevo.");
-      setBalance(0); // Valor por defecto en caso de error
+      setBalance(0);
     } finally {
       setBalanceLoading(false);
     }
+  };
+
+  const deleteTransaction = (transactionId: number | undefined): void => {
+    if (transactionId === undefined) return;
+    setTransactionIdToDelete(transactionId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (transactionIdToDelete === null) return;
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No se encontró un token de autenticación.");
+        return;
+      }
+      await Financials.deleteTransaction(transactionIdToDelete, token);
+      await fetchTransactions();
+      await fetchBalance(); // Actualizar balance tras eliminar
+      setIsDeleteModalOpen(false);
+      setTimeout(() => setIsSuccessModalOpen(true), 300);
+    } catch (error) {
+      console.error(`Error al eliminar la transacción ${transactionIdToDelete}:`, error);
+      setError("Error al eliminar la transacción. Por favor, intenta de nuevo.");
+    } finally {
+      setTransactionIdToDelete(null);
+    }
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setTransactionIdToDelete(null);
+  };
+
+  const closeSuccessModal = () => {
+    setIsSuccessModalOpen(false);
   };
 
   const openModal = (transaction: IFinancialTransaction) => {
@@ -154,13 +204,12 @@ const Financial: React.FC = () => {
         transaction.id?.toString() ?? "N/A",
         transaction.description,
         formatAmount(transaction.amount),
-        transaction.type,
+        getTransactionTypeStyle(transaction.type).translatedType,
         transaction.category?.name ?? "N/A",
         formatDate(transaction.transactionDate),
       ]),
       styles: { cellWidth: "wrap" },
       didDrawPage: () => {
-        // Agregar el balance al final del PDF
         doc.text(`Balance Actual: ${formatAmount(balance)}`, 14, doc.lastAutoTable.finalY + 10);
       },
     });
@@ -173,12 +222,11 @@ const Financial: React.FC = () => {
         id: id !== undefined ? id.toString() : "N/A",
         description,
         amount: formatAmount(amount),
-        type,
+        type: getTransactionTypeStyle(type).translatedType,
         category: category?.name ?? "N/A",
         transactionDate: formatDate(transactionDate),
       })
     );
-    // Agregar el balance como una fila adicional
     filteredTransactionsExcel.push({
       id: "",
       description: "Balance Actual",
@@ -206,7 +254,20 @@ const Financial: React.FC = () => {
           <div className="bg-white rounded-xl shadow-md p-6 mt-10">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Gestión de Finanzas</h2>
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/categorias"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-sm"
+                >
+                  Ver Categorías
+                </Link>
+                <Link
+                  to="/crear-categoria"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm"
+                >
+                  <FaPlus /> Agregar Categoría
+                </Link>
+              </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <input
@@ -266,28 +327,45 @@ const Financial: React.FC = () => {
                     </thead>
                     <tbody className="text-gray-700">
                       {currentTransactions.length > 0 ? (
-                        currentTransactions.map((transaction) => (
-                          <tr
-                            key={transaction.id}
-                            className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
-                          >
-                            <td className="py-4 px-6">{transaction.id}</td>
-                            <td className="py-4 px-6">{transaction.description}</td>
-                            <td className="py-4 px-6">{formatAmount(transaction.amount)}</td>
-                            <td className="py-4 px-6">{transaction.type}</td>
-                            <td className="py-4 px-6">{transaction.category?.name ?? "N/A"}</td>
-                            <td className="py-4 px-6">{formatDate(transaction.transactionDate)}</td>
-                            <td className="py-4 px-6 flex justify-center gap-4">
-                              <button
-                                onClick={() => openModal(transaction)}
-                                className="text-gray-500 hover:text-gray-700 transition-colors duration-200 cursor-pointer"
-                                title="Ver detalles"
-                              >
-                                <FaEye className="w-5 h-5" />
-                              </button>
-                            </td>
-                          </tr>
-                        ))
+                        currentTransactions.map((transaction) => {
+                          const { translatedType, className } = getTransactionTypeStyle(transaction.type);
+                          return (
+                            <tr
+                              key={transaction.id}
+                              className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
+                            >
+                              <td className="py-4 px-6">{transaction.id}</td>
+                              <td className="py-4 px-6">{transaction.description}</td>
+                              <td className="py-4 px-6">{formatAmount(transaction.amount)}</td>
+                              <td className={`py-4 px-6 ${className}`}>{translatedType}</td>
+                              <td className="py-4 px-6">{transaction.category?.name ?? "N/A"}</td>
+                              <td className="py-4 px-6">{formatDate(transaction.transactionDate)}</td>
+                              <td className="py-4 px-6 flex justify-center gap-4">
+                                <button
+                                  onClick={() => openModal(transaction)}
+                                  className="text-gray-500 hover:text-gray-700 transition-colors duration-200 cursor-pointer"
+                                  title="Ver detalles"
+                                >
+                                  <FaEye className="w-5 h-5" />
+                                </button>
+                                <Link
+                                  to={`/actualizar-transaccion/${transaction.id}`}
+                                  className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
+                                  title="Editar"
+                                >
+                                  <FaEdit className="w-5 h-5" />
+                                </Link>
+                                <button
+                                  onClick={() => deleteTransaction(transaction.id)}
+                                  className="text-red-500 hover:text-red-700 transition-colors duration-200 cursor-pointer"
+                                  title="Eliminar"
+                                >
+                                  <FaTrash className="w-5 h-5" />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })
                       ) : (
                         <tr>
                           <td colSpan={7} className="py-8 text-center text-gray-500">
@@ -393,7 +471,10 @@ const Financial: React.FC = () => {
                             <span className="font-medium">Monto:</span> {formatAmount(selectedTransaction.amount)}
                           </p>
                           <p>
-                            <span className="font-medium">Tipo:</span> {selectedTransaction.type}
+                            <span className="font-medium">Tipo:</span>{" "}
+                            <span className={getTransactionTypeStyle(selectedTransaction.type).className}>
+                              {getTransactionTypeStyle(selectedTransaction.type).translatedType}
+                            </span>
                           </p>
                           <p>
                             <span className="font-medium">Categoría:</span>{" "}
@@ -418,6 +499,22 @@ const Financial: React.FC = () => {
                 </Dialog>
               </Transition>
             )}
+
+            {/* Confirmation and Success Modals */}
+            <ConfirmationModal
+              isOpen={isDeleteModalOpen}
+              onClose={closeDeleteModal}
+              onConfirm={confirmDelete}
+              title="¿Estás seguro de eliminar esta transacción?"
+              confirmText="Eliminar"
+              cancelText="Cancelar"
+            />
+
+            <SuccessModal
+              isOpen={isSuccessModalOpen}
+              onClose={closeSuccessModal}
+              title="Transacción eliminada exitosamente"
+            />
           </div>
         </main>
       </div>

@@ -20,6 +20,7 @@ import CreateTransaction from "./components/financialspage/CreateTransaction";
 import Categories from "./components/financialspage/Categories";
 import CreateCategory from "./components/financialspage/CreateCategory";
 import UpdateCategory from "./components/financialspage/UpdateCategory";
+import UpdateTransaction from "./components/financialspage/UpdateTransaction";
 
 
 
@@ -51,6 +52,7 @@ function App() {
                 <Route path="/finanzas" element={<Financial />} />
                 <Route path="/balance" element={<Balance />} />
                 <Route path="/crear-transaccion" element={<CreateTransaction />} />
+                <Route path="/actualizar-transaccion/:transactionId" element={<UpdateTransaction />} />
                 <Route path="/categorias" element={<Categories />} />
                 <Route path="/crear-categoria" element={<CreateCategory />} />
                 <Route path="/actualizar-categoria/:categoryId" element={<UpdateCategory />} />

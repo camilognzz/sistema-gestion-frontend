@@ -70,6 +70,61 @@ class Financials {
     }
   }
 
+  /** 🔹 Actualizar una transacción */
+  static async updateTransaction(
+    id: number,
+    transactionData: IFinancialTransactionDTO,
+    token: string
+  ): Promise<IFinancialTransaction> {
+    try {
+      const response = await axios.put<IFinancialTransaction>(
+        `${this.BASE_URL}/transactions/${id}`,
+        transactionData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Transacción actualizada:", response.data);
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
+  /** 🔹 Eliminar una transacción */
+  static async deleteTransaction(id: number, token: string): Promise<void> {
+    try {
+      await axios.delete(`${this.BASE_URL}/transactions/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(`Transacción con ID ${id} eliminada`);
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
+  /** 🔹 Obtener una transacción por ID */
+  static async getTransactionById(id: number, token: string): Promise<IFinancialTransaction> {
+    try {
+      const response = await axios.get<IFinancialTransaction>(
+        `${this.BASE_URL}/transactions/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("Transacción obtenida por ID:", response.data);
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
   /** 🔹 Función auxiliar para manejar errores */
   private static handleError(error: unknown): never {
     if (axios.isAxiosError(error)) {
