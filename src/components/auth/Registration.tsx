@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Users from "../service/Users"; // Ajusta la ruta si es necesario
+import Users from "../service/Users"; 
 import { useNavigate } from "react-router-dom";
-import Navbar from "../common/Navbar"; // Ajusta la ruta si es necesario
-import { SidebarItems } from "../common/SidebarItems"; // Ajusta la ruta si es necesario
-import SuccessModal from "../modals/SuccessModal"; // Ajusta la ruta si es necesario
-import { Eye, EyeOff } from "lucide-react"; // Instala lucide-react si no lo tienes
+import Navbar from "../common/Navbar"; 
+import { SidebarItems } from "../common/SidebarItems"; 
+import SuccessModal from "../modals/SuccessModal"; 
+import { Eye, EyeOff } from "lucide-react"; 
 
 function Registration() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ function Registration() {
     name: "",
     email: "",
     password: "",
-    role: "USER", // Valor por defecto
+    role: "USER", 
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,7 +51,7 @@ function Registration() {
 
       setTimeout(() => {
         setIsSuccessModalOpen(false);
-        navigate("/admin/user-management");
+        navigate("/usuarios");
       }, 2000);
     } catch (error) {
       console.error("Error registering user:", error);
@@ -62,11 +62,11 @@ function Registration() {
 
   const closeSuccessModal = () => {
     setIsSuccessModalOpen(false);
-    navigate("/admin/user-management");
+    navigate("/usuarios");
   };
 
   const handleCancel = () => {
-    navigate("/admin/user-management");
+    navigate("/usuarios");
   }
 
   const togglePasswordVisibility = () => {
@@ -83,7 +83,7 @@ function Registration() {
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
               Registro de Usuario
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
               <div>
                 <label className="block text-gray-700 text-sm font-medium mb-1">
                   Nombre

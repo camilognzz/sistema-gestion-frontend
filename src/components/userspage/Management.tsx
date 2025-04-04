@@ -8,7 +8,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { Dialog, DialogBackdrop, DialogPanel,Transition } from "@headlessui/react";
+import { Dialog, DialogBackdrop, DialogPanel, Transition } from "@headlessui/react";
 import SuccessModal from "../modals/SuccessModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
 
@@ -19,12 +19,12 @@ interface User {
   role: string;
 }
 
-
 const Management: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage, setUsersPerPage] = useState(5); // Cambiado a estado, por defecto 5
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -32,7 +32,6 @@ const Management: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState<number | null>(null);
-  const usersPerPage = 7;
 
   useEffect(() => {
     fetchUsers();
@@ -42,7 +41,7 @@ const Management: React.FC = () => {
     setFilteredUsers(
       users.filter((user) =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      ).reverse()
     );
     setCurrentPage(1);
   }, [searchTerm, users]);
@@ -119,6 +118,11 @@ const Management: React.FC = () => {
     setSelectedUser(null);
   };
 
+  const handleUsersPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setUsersPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reinicia a la primera página al cambiar la cantidad
+  };
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -137,7 +141,7 @@ const Management: React.FC = () => {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
-    doc.text("Reporte de Gestión de Usuarios", 14, 15);
+    doc.text("Reporte de Usuarios", 14, 15);
     autoTable(doc, {
       startY: 20,
       head: [["ID", "Nombre", "Correo", "Rol"]],
@@ -175,7 +179,18 @@ const Management: React.FC = () => {
           <div className="bg-white rounded-xl shadow-md p-6 mt-10">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Gestión de Usuarios</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-gray-800">Usuarios</h2>
+                <select
+                  value={usersPerPage}
+                  onChange={handleUsersPerPageChange}
+                  className="p-2 cursor-pointer border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                >
+                  <option value={5}>5 por página</option>
+                  <option value={10}>10 por página</option>
+                  <option value={15}>15 por página</option>
+                </select>
+              </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <input
@@ -188,7 +203,7 @@ const Management: React.FC = () => {
                   <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 </div>
                 <Link
-                  to="/register"
+                  to="/registro"
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm"
                 >
                   <FaUserPlus /> Nuevo
@@ -214,7 +229,7 @@ const Management: React.FC = () => {
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="mt-2 text-gray-600">Cargando usuarios...</p>
+                <p className="mt-2 text-gray-600">Cargando...</p>
               </div>
             ) : error ? (
               <div className="text-center py-8 text-red-600 font-medium">{error}</div>
@@ -243,8 +258,7 @@ const Management: React.FC = () => {
                             <td className="py-4 px-6">{user.email}</td>
                             <td className="py-4 px-6">
                               <span
-                                className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${user.role === "ADMIN" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
-                                  }`}
+                                className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${user.role === "ADMIN" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}`}
                               >
                                 {user.role === "ADMIN" ? "Administrador" : "Usuario"}
                               </span>
@@ -257,20 +271,32 @@ const Management: React.FC = () => {
                               >
                                 <FaEye className="w-5 h-5" />
                               </button>
-                              <Link
-                                to={`/update-user/${user.id}`}
-                                className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
-                                title="Editar"
-                              >
-                                <FaEdit className="w-5 h-5" />
-                              </Link>
-                              <button
-                                onClick={() => deleteUser(user.id)}
-                                className="text-red-500 hover:text-red-700 transition-colors duration-200 cursor-pointer"
-                                title="Eliminar"
-                              >
-                                <FaTrash className="w-5 h-5" />
-                              </button>
+                              {user.id === 2 ? (
+                                <span className="text-gray-300 cursor-not-allowed" title="No se puede editar">
+                                  <FaEdit className="w-5 h-5" />
+                                </span>
+                              ) : (
+                                <Link
+                                  to={`/actualizar-usuario/${user.id}`}
+                                  className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
+                                  title="Editar"
+                                >
+                                  <FaEdit className="w-5 h-5" />
+                                </Link>
+                              )}
+                              {user.id === 2 ? (
+                                <span className="text-gray-300 cursor-not-allowed" title="No se puede eliminar">
+                                  <FaTrash className="w-5 h-5" />
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={() => deleteUser(user.id)}
+                                  className="text-red-500 hover:text-red-700 transition-colors duration-200 cursor-pointer"
+                                  title="Eliminar"
+                                >
+                                  <FaTrash className="w-5 h-5" />
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -295,8 +321,8 @@ const Management: React.FC = () => {
                       onClick={prevPage}
                       disabled={currentPage === 1}
                       className={`p-2 rounded-lg transition-all duration-200 ${currentPage === 1
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
                         }`}
                     >
                       <FaChevronLeft className="w-5 h-5" />
@@ -305,8 +331,8 @@ const Management: React.FC = () => {
                       onClick={nextPage}
                       disabled={currentPage >= Math.ceil(filteredUsers.length / usersPerPage)}
                       className={`p-2 rounded-lg transition-all duration-200 ${currentPage >= Math.ceil(filteredUsers.length / usersPerPage)
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
                         }`}
                     >
                       <FaChevronRight className="w-5 h-5" />
@@ -348,8 +374,7 @@ const Management: React.FC = () => {
                           <p>
                             <span className="font-medium">Rol:</span>{" "}
                             <span
-                              className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${selectedUser.role === "ADMIN" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
-                                }`}
+                              className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${selectedUser.role === "ADMIN" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}`}
                             >
                               {selectedUser.role === "ADMIN" ? "Administrador" : "Usuario"}
                             </span>
@@ -380,10 +405,10 @@ const Management: React.FC = () => {
               cancelText="Cancelar"
             />
 
-            <SuccessModal 
-            isOpen={isSuccessModalOpen}
-             onClose={closeSuccessModal} 
-             title="Usuario eliminado exitosamente" />
+            <SuccessModal
+              isOpen={isSuccessModalOpen}
+              onClose={closeSuccessModal}
+              title="Usuario eliminado exitosamente" />
           </div>
         </main>
       </div>

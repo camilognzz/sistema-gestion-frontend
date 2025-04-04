@@ -46,7 +46,7 @@ export const Login = () => {
           localStorage.setItem("role", userData.user.role);
         }
         setTimeout(() => {
-          navigate("/profile");
+          navigate("/perfil");
         }, 1000); // Retraso de 1 segundo para mostrar la carga
       } else {
         setError("Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");

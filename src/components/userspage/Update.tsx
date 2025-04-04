@@ -12,7 +12,7 @@ function Update() {
   const [userData, setUserData] = useState({
     name: "",
     email: "",
-    role: "USER", // Valor por defecto
+    role: "USER",
   });
 
   const [loading, setLoading] = useState(true);
@@ -20,10 +20,15 @@ function Update() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   useEffect(() => {
+    if (userId === "2") {
+      // Redirigir a /usuarios si el userId es 2
+      navigate("/usuarios");
+      return;
+    }
     if (userId) {
       fetchUserDataById(userId);
     }
-  }, [userId]);
+  }, [userId, navigate]);
 
   const fetchUserDataById = async (userId: string) => {
     try {
@@ -77,10 +82,9 @@ function Update() {
       setUpdating(false);
       setIsSuccessModalOpen(true);
 
-      // Cerrar la modal y redirigir después de 2 segundos
       setTimeout(() => {
         setIsSuccessModalOpen(false);
-        navigate("/admin/user-management");
+        navigate("/usuarios");
       }, 2000);
     } catch (error) {
       console.error("❌ Error updating user profile:", error);
@@ -90,12 +94,12 @@ function Update() {
   };
 
   const handleCancel = () => {
-    navigate("/admin/user-management");
+    navigate("/usuarios");
   };
 
   const closeSuccessModal = () => {
     setIsSuccessModalOpen(false);
-    navigate("/admin/user-management");
+    navigate("/usuarios");
   };
 
   if (loading) {
@@ -107,7 +111,7 @@ function Update() {
           <main className="flex-1 flex items-center justify-center p-6">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-              <p className="mt-2 text-gray-600">Cargando datos...</p>
+              <p className="mt-2 text-gray-600">Cargando...</p>
             </div>
           </main>
         </div>
@@ -162,7 +166,7 @@ function Update() {
                   name="role"
                   value={userData.role}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                  className="w-full px-4 py-2 cursor-pointer border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
                 >
                   <option value="USER">Usuario</option>
                   <option value="ADMIN">Administrador</option>

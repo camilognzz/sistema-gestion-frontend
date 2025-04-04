@@ -7,15 +7,17 @@ interface LoginResponse {
     name: string;
     email: string;
     role: string;
+    profilePicture?: string; // Añadido para soportar la foto de perfil
   };
   error?: string;
 }
 
-interface UserRegisterData {
+export interface UserRegisterData {
   name: string;
   email: string;
   password?: string;
   role: string;
+  profilePicture?: File | null; // Añadido para manejar el archivo de imagen
 }
 
 export interface User {
@@ -24,6 +26,7 @@ export interface User {
   email: string;
   role: string;
   password?: string;
+  profilePicture?: string; // Añadido para la respuesta del servidor
 }
 
 class Users {
@@ -42,33 +45,34 @@ class Users {
     throw new Error("Error desconocido");
   }
 
-  /** 🔹 Login */
-  static async login(email: string, password: string) {
-    try {
-      const response = await axios.post(`${Users.BASE_URL}/auth/login`, {
-        email,
-        password,
-      });
+ /** 🔹 Login */
+ static async login(email: string, password: string) {
+  try {
+    const response = await axios.post(`${Users.BASE_URL}/auth/login`, {
+      email,
+      password,
+    });
 
-      console.log("🔍 Respuesta del backend:", response.data);
+    console.log("🔍 Respuesta del backend:", response.data);
 
-      const { token, role } = response.data; // Extraer datos correctamente
+    const { token, role } = response.data; // Extraer datos correctamente
 
-      if (!token || !role) {
-        throw new Error("❌ No se recibió token o rol válido");
-      }
-
-      // Guardar en localStorage
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-
-      console.log("✅ Token y rol guardados en localStorage");
-      return { token, role };
-    } catch (error) {
-      console.error("❌ Error en login:", error);
-      throw error;
+    if (!token || !role) {
+      throw new Error("❌ No se recibió token o rol válido");
     }
+
+    // Guardar en localStorage
+    localStorage.setItem("token", token);
+    localStorage.setItem("role", role);
+
+    console.log("✅ Token y rol guardados en localStorage");
+    return { token, role };
+  } catch (error) {
+    console.error("❌ Error en login:", error);
+    throw error;
   }
+}
+
 
   /** 🔹 Registro */
   static async register(

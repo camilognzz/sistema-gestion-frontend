@@ -32,7 +32,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/perfil" element={<Profile />} />
             <Route path="/api/v1/proyectos" element={<Project />} />
             <Route path="/create-project" element={<CreateProject />} />
             <Route path="/update-project/:projectId" element={<UpdateProject />} />
@@ -46,9 +46,9 @@ function App() {
             {/* Admin-only routes */}
             {Users.adminOnly() && (
               <>
-                <Route path="/register" element={<Registration />} />
-                <Route path="/admin/user-management" element={<Management />} />
-                <Route path="/update-user/:userId" element={<Update />} />
+                <Route path="/registro" element={<Registration />} />
+                <Route path="/usuarios" element={<Management />} />
+                <Route path="/actualizar-usuario/:userId" element={<Update />} />
                 <Route path="/finanzas" element={<Financial />} />
                 <Route path="/balance" element={<Balance />} />
                 <Route path="/crear-transaccion" element={<CreateTransaction />} />

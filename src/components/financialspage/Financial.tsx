@@ -197,24 +197,26 @@ const Financial: React.FC = () => {
   const exportToPDF = () => {
     const doc = new jsPDF();
     doc.text("Reporte de Transacciones Financieras", 14, 15);
+
+    const tableColumn = ["ID", "Descripción", "Monto", "Tipo", "Categoría", "Fecha"];
+    const tableRows = transactions.map((transaction) => [
+      transaction.id?.toString() ?? "N/A",
+      transaction.description,
+      formatAmount(transaction.amount),
+      getTransactionTypeStyle(transaction.type).translatedType,
+      transaction.category?.name ?? "N/A",
+      formatDate(transaction.transactionDate),
+    ]);
+
     autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
       startY: 20,
-      head: [["ID", "Descripción", "Monto", "Tipo", "Categoría", "Fecha"]],
-      body: transactions.map((transaction) => [
-        transaction.id?.toString() ?? "N/A",
-        transaction.description,
-        formatAmount(transaction.amount),
-        getTransactionTypeStyle(transaction.type).translatedType,
-        transaction.category?.name ?? "N/A",
-        formatDate(transaction.transactionDate),
-      ]),
-      styles: { cellWidth: "wrap" },
-      didDrawPage: () => {
-        doc.text(`Balance Actual: ${formatAmount(balance)}`, 14, doc.lastAutoTable.finalY + 10);
-      },
     });
+
     doc.save("reporte_transacciones.pdf");
   };
+
 
   const exportToExcel = () => {
     const filteredTransactionsExcel = transactions.map(
@@ -386,22 +388,20 @@ const Financial: React.FC = () => {
                     <button
                       onClick={prevPage}
                       disabled={currentPage === 1}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage === 1
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage === 1
                           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                           : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                        }`}
                     >
                       <FaChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={nextPage}
                       disabled={currentPage >= Math.ceil(filteredTransactions.length / transactionsPerPage)}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage >= Math.ceil(filteredTransactions.length / transactionsPerPage)
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage >= Math.ceil(filteredTransactions.length / transactionsPerPage)
                           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                           : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                        }`}
                     >
                       <FaChevronRight className="w-5 h-5" />
                     </button>
@@ -421,9 +421,8 @@ const Financial: React.FC = () => {
                     <div className="text-center">
                       <p className="text-lg text-gray-600 mb-2">Balance Actual (Ingresos - Gastos):</p>
                       <p
-                        className={`text-2xl font-bold ${
-                          balance >= 0 ? "text-green-600" : "text-red-600"
-                        }`}
+                        className={`text-2xl font-bold ${balance >= 0 ? "text-green-600" : "text-red-600"
+                          }`}
                       >
                         {formatAmount(balance)}
                       </p>
