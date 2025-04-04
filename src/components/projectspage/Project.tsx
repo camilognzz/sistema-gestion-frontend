@@ -23,13 +23,11 @@ import SuccessModal from "../modals/SuccessModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
 import { IProyecto } from "./interface/IProjects";
 
-// Función para formatear la fecha de "YYYY-MM-DD" a "DD/MM/YYYY"
 const formatDate = (dateString: string): string => {
   const [year, month, day] = dateString.split("-");
   return `${day}/${month}/${year}`;
 };
 
-// Función para formatear el estado, reemplazando guiones por espacios
 const formatEstado = (estado: string): string => {
   return estado.replace(/_/g, " ");
 };
@@ -39,6 +37,7 @@ const Project: React.FC = () => {
   const [filteredProjects, setFilteredProjects] = useState<IProyecto[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [projectsPerPage, setProjectsPerPage] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<IProyecto | null>(null);
@@ -46,18 +45,19 @@ const Project: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [projectIdToDelete, setProjectIdToDelete] = useState<number | null>(null);
-  const projectsPerPage = 7;
 
   useEffect(() => {
     fetchProjects();
   }, []);
 
   useEffect(() => {
-    setFilteredProjects(
-      projects.filter((project) =>
+    const filtered = projects
+      .filter((project) =>
         project.nombre.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    );
+      .reverse(); 
+    console.log("Filtered Projects (reversed):", filtered); 
+    setFilteredProjects(filtered);
     setCurrentPage(1);
   }, [searchTerm, projects]);
 
@@ -73,8 +73,11 @@ const Project: React.FC = () => {
       }
       const projectsResponse: IProyecto[] = await Projects.getAllProjects(token);
       if (Array.isArray(projectsResponse)) {
-        setProjects(projectsResponse);
-        setFilteredProjects(projectsResponse);
+        console.log("Projects Response:", projectsResponse); 
+        setProjects(projectsResponse); 
+        const reversedProjects = [...projectsResponse].reverse(); 
+        console.log("Reversed Projects:", reversedProjects); 
+        setFilteredProjects(reversedProjects); 
       } else {
         console.error("Invalid response format:", projectsResponse);
         setProjects([]);
@@ -135,9 +138,15 @@ const Project: React.FC = () => {
     setSelectedProject(null);
   };
 
+  const handleProjectsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setProjectsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  };
+
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
   const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
+  console.log("Current Projects:", currentProjects); 
 
   const nextPage = () => {
     if (currentPage < Math.ceil(filteredProjects.length / projectsPerPage)) {
@@ -158,7 +167,7 @@ const Project: React.FC = () => {
       startY: 20,
       head: [["ID", "Nombre", "Responsable", "Estado", "Fecha Inicio", "Fecha Fin"]],
       body: projects.map((project) => [
-        project.id !== undefined ? project.id.toString() : "N/A", // Convertimos a string y manejamos undefined
+        project.id !== undefined ? project.id.toString() : "N/A",
         project.nombre ?? "N/A",
         project.responsable?.name ?? "N/A",
         formatEstado(project.estado ?? "N/A"),
@@ -172,7 +181,7 @@ const Project: React.FC = () => {
   const exportToExcel = () => {
     const filteredProjects = projects.map(
       ({ id, nombre, responsable, estado, fechaInicio, fechaFin }) => ({
-        id: id !== undefined ? id.toString() : "N/A", // Convertimos a string y manejamos undefined
+        id: id !== undefined ? id.toString() : "N/A",
         nombre: nombre ?? "N/A",
         responsable: responsable?.name ?? "N/A",
         estado: formatEstado(estado ?? "N/A"),
@@ -199,12 +208,23 @@ const Project: React.FC = () => {
           <div className="bg-white rounded-xl shadow-md p-6 mt-10">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Gestión de Proyectos</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-gray-800">Proyectos</h2>
+                <select
+                  value={projectsPerPage}
+                  onChange={handleProjectsPerPageChange}
+                  className="p-2 border cursor-pointer border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                >
+                  <option value={5}>5 por página</option>
+                  <option value={10}>10 por página</option>
+                  <option value={15}>15 por página</option>
+                </select>
+              </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="Buscar por nombre..."
+                    placeholder="Buscar por proyecto..."
                     className="w-72 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 placeholder-gray-400"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -212,7 +232,7 @@ const Project: React.FC = () => {
                   <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 </div>
                 <Link
-                  to="/create-project"
+                  to="/crear-proyecto"
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm"
                 >
                   <FaPlus /> Nuevo
@@ -238,7 +258,7 @@ const Project: React.FC = () => {
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="mt-2 text-gray-600">Cargando proyectos...</p>
+                <p className="mt-2 text-gray-600">Cargando...</p>
               </div>
             ) : error ? (
               <div className="text-center py-8 text-red-600 font-medium">{error}</div>
@@ -293,7 +313,7 @@ const Project: React.FC = () => {
                                 <FaEye className="w-5 h-5" />
                               </button>
                               <Link
-                                to={`/update-project/${project.id ?? ""}`}
+                                to={`/actualizar-proyecto/${project.id ?? ""}`}
                                 className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
                                 title="Editar"
                               >

@@ -1,4 +1,3 @@
-// src/components/projectspage/interface/IProjects.ts
 export interface IProyecto {
   id?: number;
   nombre: string;

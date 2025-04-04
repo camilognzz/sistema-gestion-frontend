@@ -24,7 +24,7 @@ const Management: React.FC = () => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage, setUsersPerPage] = useState(5); // Cambiado a estado, por defecto 5
+  const [usersPerPage, setUsersPerPage] = useState(5); 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -120,7 +120,7 @@ const Management: React.FC = () => {
 
   const handleUsersPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setUsersPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reinicia a la primera página al cambiar la cantidad
+    setCurrentPage(1); 
   };
 
   const indexOfLastUser = currentPage * usersPerPage;

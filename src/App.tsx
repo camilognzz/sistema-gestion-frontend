@@ -33,9 +33,9 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/perfil" element={<Profile />} />
-            <Route path="/api/v1/proyectos" element={<Project />} />
-            <Route path="/create-project" element={<CreateProject />} />
-            <Route path="/update-project/:projectId" element={<UpdateProject />} />
+            <Route path="/proyectos" element={<Project />} />
+            <Route path="/crear-proyecto" element={<CreateProject />} />
+            <Route path="/actualizar-proyecto/:projectId" element={<UpdateProject />} />
             <Route path="/contactos" element={<Contact />} />
             <Route path="/crear-contacto" element={<CreateContact />} />
             <Route path="/actualizar-contacto/:contactId" element={<UpdateContact />} />

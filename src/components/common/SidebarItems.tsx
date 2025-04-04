@@ -45,7 +45,7 @@ export const SidebarItems = () => {
             <SidebarItem icon={<User size={20} />} text="Usuarios" />
           </Link>
         )}
-        <Link to={"/api/v1/proyectos"}>
+        <Link to={"/proyectos"}>
           <SidebarItem icon={<Briefcase size={20} />} text="Proyectos" />
         </Link>
         <Link to={"/contactos"}>

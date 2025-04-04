@@ -7,9 +7,6 @@ import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
 import { IProyecto } from "./interface/IProjects";
 
-// Eliminamos formatDateForInput porque no necesitamos transformar la fecha
-// ya que el backend la envía en formato "YYYY-MM-DD" y el input la acepta directamente
-
 const UpdateProject: React.FC = () => {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
@@ -52,8 +49,8 @@ const UpdateProject: React.FC = () => {
           nombre: response.nombre,
           descripcion: response.descripcion,
           responsable: response.responsable,
-          fechaInicio: response.fechaInicio, // Usamos directamente el valor del backend
-          fechaFin: response.fechaFin,       // Usamos directamente el valor del backend
+          fechaInicio: response.fechaInicio, 
+          fechaFin: response.fechaFin,       
           estado: response.estado,
         });
         setLoading(false);
@@ -144,7 +141,7 @@ const UpdateProject: React.FC = () => {
 
       setTimeout(() => {
         setIsSuccessModalOpen(false);
-        navigate("/api/v1/proyectos");
+        navigate("/proyectos");
       }, 2000);
     } catch (error: unknown) {
       console.error("❌ Error updating project:", error);
@@ -153,12 +150,12 @@ const UpdateProject: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/api/v1/proyectos");
+    navigate("/proyectos");
   };
 
   const closeSuccessModal = () => {
     setIsSuccessModalOpen(false);
-    navigate("/api/v1/proyectos");
+    navigate("/proyectos");
   };
 
   if (loading) {
@@ -170,7 +167,7 @@ const UpdateProject: React.FC = () => {
           <main className="flex-1 flex items-center justify-center p-6">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-              <p className="mt-2 text-gray-600">Cargando datos...</p>
+              <p className="mt-2 text-gray-600">Cargando...</p>
             </div>
           </main>
         </div>

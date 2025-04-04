@@ -105,12 +105,12 @@ const CreateProject: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/api/v1/proyectos");
+    navigate("/proyectos");
   };
 
   const closeSuccessModal = () => {
     setIsSuccessModalOpen(false);
-    navigate("/api/v1/proyectos");
+    navigate("/proyectos");
   };
 
   return (
@@ -181,7 +181,7 @@ const CreateProject: React.FC = () => {
                     <option value="">Seleccione un responsable</option>
                     {users.map((user) => (
                       <option key={user.id} value={user.id}>
-                        {user.name} ({user.email})
+                        {user.name}
                       </option>
                     ))}
                   </select>
