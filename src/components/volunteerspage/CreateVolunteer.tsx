@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Volunteers from "../service/Volunteers"; // Ajusta la ruta según tu estructura
+import Volunteers from "../service/Volunteers"; 
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
-import { IVoluntario } from "../volunteerspage/interface/IVoluntario"; // Ajusta la ruta según tu estructura
+import { IVoluntario } from "../volunteerspage/interface/IVoluntario"; 
 import axios from "axios";
 
-// Tipos para los errores de validación
+
 interface FormErrors {
   documentoIdentidad?: string;
   nombre?: string;
@@ -20,7 +20,7 @@ interface FormErrors {
 const CreateVolunteer: React.FC = () => {
   const navigate = useNavigate();
 
-  // Estado inicial del formulario alineado con IVoluntario
+  
   const [formData, setFormData] = useState<IVoluntario>({
     documentoIdentidad: "",
     nombre: "",
@@ -38,17 +38,17 @@ const CreateVolunteer: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  // Manejo de cambios en los inputs con useCallback para optimizar rendimiento
+  
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
-      setErrors((prev) => ({ ...prev, [name]: undefined })); // Limpiar error al cambiar
+      setErrors((prev) => ({ ...prev, [name]: undefined })); 
     },
     []
   );
 
-  // Validación del formulario
+  
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
     if (!formData.documentoIdentidad.trim()) {
@@ -72,7 +72,7 @@ const CreateVolunteer: React.FC = () => {
     return newErrors;
   };
 
-  // Manejo del envío del formulario
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -92,7 +92,7 @@ const CreateVolunteer: React.FC = () => {
         return;
       }
 
-      // Preparar datos para enviar (campos vacíos como null para el backend)
+      
       const volunteerData: IVoluntario = {
         documentoIdentidad: formData.documentoIdentidad,
         nombre: formData.nombre,
@@ -125,12 +125,12 @@ const CreateVolunteer: React.FC = () => {
     }
   };
 
-  // Manejo de cancelación
+  
   const handleCancel = useCallback(() => {
     navigate("/voluntarios");
   }, [navigate]);
 
-  // Cerrar modal de éxito
+  
   const closeSuccessModal = useCallback(() => {
     setIsSuccessModalOpen(false);
     navigate("/voluntarios");
@@ -151,7 +151,7 @@ const CreateVolunteer: React.FC = () => {
                   Documento de Identidad 
                 </label>
                 <input
-                  type="number" // Cambiado de number a text para coincidir con IVoluntario
+                  type="number" 
                   id="documentoIdentidad"
                   name="documentoIdentidad"
                   value={formData.documentoIdentidad}
@@ -207,7 +207,7 @@ const CreateVolunteer: React.FC = () => {
                   Teléfono 
                 </label>
                 <input
-                  type="number" // Cambiado de number a text para coincidir con IVoluntario
+                  type="number" 
                   id="telefono"
                   name="telefono"
                   value={formData.telefono}

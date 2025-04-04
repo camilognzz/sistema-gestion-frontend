@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Volunteers from "../service/Volunteers"; // Ajusta la ruta según tu estructura
+import Volunteers from "../service/Volunteers"; 
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
-import { IVoluntario } from "../volunteerspage/interface/IVoluntario"; // Ajusta la ruta según tu estructura
+import { IVoluntario } from "../volunteerspage/interface/IVoluntario"; 
 import axios from "axios";
 
-// Tipos para los errores de validación
+
 interface FormErrors {
   documentoIdentidad?: string;
   nombre?: string;
@@ -21,7 +21,7 @@ const UpdateVolunteer: React.FC = () => {
   const navigate = useNavigate();
   const { volunteerId } = useParams<{ volunteerId: string }>();
 
-  // Estado inicial del formulario alineado con IVoluntario
+  
   const [formData, setFormData] = useState<IVoluntario>({
     id: undefined,
     documentoIdentidad: "",
@@ -37,11 +37,11 @@ const UpdateVolunteer: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(true); // Para la carga inicial
-  const [isUpdating, setIsUpdating] = useState(false); // Para el estado de actualización
+  const [isLoading, setIsLoading] = useState(true); 
+  const [isUpdating, setIsUpdating] = useState(false); 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  // Cargar datos del voluntario al montar el componente
+  
   useEffect(() => {
     if (volunteerId) {
       fetchVolunteerDataById(volunteerId);
@@ -83,17 +83,17 @@ const UpdateVolunteer: React.FC = () => {
     }
   };
 
-  // Manejo de cambios en los inputs con useCallback para optimizar rendimiento
+  
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
-      setErrors((prev) => ({ ...prev, [name]: undefined })); // Limpiar error al cambiar
+      setErrors((prev) => ({ ...prev, [name]: undefined })); 
     },
     []
   );
 
-  // Validación del formulario
+  
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
     if (!formData.documentoIdentidad.trim()) {
@@ -117,7 +117,7 @@ const UpdateVolunteer: React.FC = () => {
     return newErrors;
   };
 
-  // Manejo del envío del formulario
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUpdating(true);
@@ -143,7 +143,7 @@ const UpdateVolunteer: React.FC = () => {
         return;
       }
 
-      // Preparar datos para enviar (campos vacíos como null para el backend)
+      
       const volunteerData: IVoluntario = {
         id: formData.id,
         documentoIdentidad: formData.documentoIdentidad,
@@ -181,12 +181,12 @@ const UpdateVolunteer: React.FC = () => {
     }
   };
 
-  // Manejo de cancelación
+  
   const handleCancel = useCallback(() => {
     navigate("/voluntarios");
   }, [navigate]);
 
-  // Cerrar modal de éxito
+  
   const closeSuccessModal = useCallback(() => {
     setIsSuccessModalOpen(false);
     navigate("/voluntarios");
@@ -201,7 +201,7 @@ const UpdateVolunteer: React.FC = () => {
           <main className="flex-1 flex items-center justify-center p-6">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-              <p className="mt-2 text-gray-600">Cargando datos...</p>
+              <p className="mt-2 text-gray-600">Cargando...</p>
             </div>
           </main>
         </div>

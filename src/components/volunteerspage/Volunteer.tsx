@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Volunteers from "../service/Volunteers"; // Ajusta la ruta según tu estructura
+import Volunteers from "../service/Volunteers";
 import {
   FaPlus,
   FaTrash,
@@ -21,15 +21,13 @@ import { saveAs } from "file-saver";
 import { Dialog, DialogBackdrop, DialogPanel, Transition } from "@headlessui/react";
 import SuccessModal from "../modals/SuccessModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
-import { IVoluntario } from "./interface/IVoluntario"; // Ajusta la ruta según tu estructura
+import { IVoluntario } from "./interface/IVoluntario";
 
-// Función para formatear la fecha de "YYYY-MM-DD" a "DD/MM/YYYY"
 const formatDate = (dateString: string): string => {
   const [year, month, day] = dateString.split("-");
   return `${day}/${month}/${year}`;
 };
 
-// Función para formatear la disponibilidad (eliminar guiones y asegurar consistencia)
 const formatDisponibilidad = (disponibilidad: string): string => {
   return disponibilidad.replace("_", " ");
 };
@@ -39,6 +37,7 @@ const Volunteer: React.FC = () => {
   const [filteredVolunteers, setFilteredVolunteers] = useState<IVoluntario[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [volunteersPerPage, setVolunteersPerPage] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedVolunteer, setSelectedVolunteer] = useState<IVoluntario | null>(null);
@@ -46,7 +45,6 @@ const Volunteer: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [volunteerIdToDelete, setVolunteerIdToDelete] = useState<number | null>(null);
-  const volunteersPerPage = 7;
 
   useEffect(() => {
     fetchVolunteers();
@@ -54,9 +52,11 @@ const Volunteer: React.FC = () => {
 
   useEffect(() => {
     setFilteredVolunteers(
-      volunteers.filter((volunteer) =>
-        volunteer.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      volunteers
+        .filter((volunteer) =>
+          volunteer.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .reverse()
     );
     setCurrentPage(1);
   }, [searchTerm, volunteers]);
@@ -74,7 +74,7 @@ const Volunteer: React.FC = () => {
       const volunteersResponse: IVoluntario[] = await Volunteers.getAllVolunteers(token);
       if (Array.isArray(volunteersResponse)) {
         setVolunteers(volunteersResponse);
-        setFilteredVolunteers(volunteersResponse);
+        setFilteredVolunteers([...volunteersResponse].reverse());
       } else {
         console.error("Invalid response format:", volunteersResponse);
         setVolunteers([]);
@@ -135,6 +135,11 @@ const Volunteer: React.FC = () => {
     setSelectedVolunteer(null);
   };
 
+  const handleVolunteersPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setVolunteersPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  };
+
   const indexOfLastVolunteer = currentPage * volunteersPerPage;
   const indexOfFirstVolunteer = indexOfLastVolunteer - volunteersPerPage;
   const currentVolunteers = filteredVolunteers.slice(indexOfFirstVolunteer, indexOfLastVolunteer);
@@ -152,7 +157,7 @@ const Volunteer: React.FC = () => {
   };
 
   const exportToPDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF({ orientation: "landscape" }); 
     doc.text("Reporte de Voluntarios", 14, 15);
     autoTable(doc, {
       startY: 20,
@@ -184,9 +189,19 @@ const Volunteer: React.FC = () => {
         formatDisponibilidad(volunteer.disponibilidad),
         formatDate(volunteer.fechaRegistro),
       ]),
-      styles: { cellWidth: "wrap" },
+      styles: { fontSize: 8, cellPadding: 2 }, 
       columnStyles: {
-        9: { cellWidth: 25 }, // Ajusta el ancho de la columna "Disponibilidad" para evitar saltos de línea
+        0: { cellWidth: 15 }, 
+        1: { cellWidth: 25 }, 
+        2: { cellWidth: 30 }, 
+        3: { cellWidth: 35 }, 
+        4: { cellWidth: 20 }, 
+        5: { cellWidth: 35 }, 
+        6: { cellWidth: 25 }, 
+        7: { cellWidth: 20 }, 
+        8: { cellWidth: 25 }, 
+        9: { cellWidth: 25 }, 
+        10: { cellWidth: 25 }, 
       },
     });
     doc.save("reporte_voluntarios.pdf");
@@ -235,11 +250,22 @@ const Volunteer: React.FC = () => {
       <Navbar />
       <div className="flex flex-1">
         <SidebarItems />
-        <main className="flex-1 p-6 max-w-5xl mx-auto">
+        <main className="flex-1 p-6 max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-md p-6 mt-10">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Gestión de Voluntarios</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-gray-800">Voluntarios</h2>
+                <select
+                  value={volunteersPerPage}
+                  onChange={handleVolunteersPerPageChange}
+                  className="p-2 border cursor-pointer border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                >
+                  <option value={5}>5 por página</option>
+                  <option value={10}>10 por página</option>
+                  <option value={15}>15 por página</option>
+                </select>
+              </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <input
@@ -278,7 +304,7 @@ const Volunteer: React.FC = () => {
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="mt-2 text-gray-600">Cargando voluntarios...</p>
+                <p className="mt-2 text-gray-600">Cargando...</p>
               </div>
             ) : error ? (
               <div className="text-center py-8 text-red-600 font-medium">{error}</div>

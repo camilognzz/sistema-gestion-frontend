@@ -166,7 +166,7 @@ const UpdateContact: React.FC = () => {
           <main className="flex-1 flex items-center justify-center p-6">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-              <p className="mt-2 text-gray-600">Cargando datos...</p>
+              <p className="mt-2 text-gray-600">Cargando...</p>
             </div>
           </main>
         </div>
