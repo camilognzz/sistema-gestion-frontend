@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Contacts from "../service/Contacts"; // Ajusta la ruta según tu estructura
+import Contacts from "../service/Contacts"; 
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
@@ -9,7 +9,7 @@ import { IContacto } from "../contactspage/interface/IContacto";
 const CreateContact: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<IContacto>({
-    id: 0, // No se usa en creación, pero lo inicializamos para cumplir con la interfaz
+    id: 0, 
     nombre: "",
     tipoContacto: "INDIVIDUAL" as "INDIVIDUAL" | "EMPRESA",
     telefono: "",
@@ -17,7 +17,7 @@ const CreateContact: React.FC = () => {
     direccion: "",
     cargo: "",
     notas: "",
-    fechaRegistro: new Date().toISOString().split("T")[0], // Fecha actual por defecto
+    fechaRegistro: new Date().toISOString().split("T")[0], 
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +43,6 @@ const CreateContact: React.FC = () => {
         return;
       }
 
-      // Validaciones básicas
       if (!formData.nombre.trim()) {
         setError("El nombre es obligatorio.");
         setIsLoading(false);
@@ -60,7 +59,6 @@ const CreateContact: React.FC = () => {
         return;
       }
 
-      // Preparar datos para enviar (excluyendo el ID ya que es creación)
       const contactData: IContacto = {
         nombre: formData.nombre,
         tipoContacto: formData.tipoContacto,
@@ -145,7 +143,7 @@ const CreateContact: React.FC = () => {
                   Teléfono
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   id="telefono"
                   name="telefono"
                   value={formData.telefono}

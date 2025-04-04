@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Contacts from "../service/Contacts"; // Ajusta la ruta según tu estructura
+import Contacts from "../service/Contacts";
 import {
   FaPlus,
   FaTrash,
@@ -23,7 +23,6 @@ import SuccessModal from "../modals/SuccessModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
 import { IContacto } from "../contactspage/interface/IContacto";
 
-// Función para formatear la fecha de "YYYY-MM-DD" a "DD/MM/YYYY"
 const formatDate = (dateString: string): string => {
   const [year, month, day] = dateString.split("-");
   return `${day}/${month}/${year}`;
@@ -34,6 +33,7 @@ const Contact: React.FC = () => {
   const [filteredContacts, setFilteredContacts] = useState<IContacto[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [contactsPerPage, setContactsPerPage] = useState(5); 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedContact, setSelectedContact] = useState<IContacto | null>(null);
@@ -41,7 +41,6 @@ const Contact: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [contactIdToDelete, setContactIdToDelete] = useState<number | null>(null);
-  const contactsPerPage = 7;
 
   useEffect(() => {
     fetchContacts();
@@ -49,9 +48,11 @@ const Contact: React.FC = () => {
 
   useEffect(() => {
     setFilteredContacts(
-      contacts.filter((contact) =>
-        contact.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      contacts
+        .filter((contact) =>
+          contact.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .reverse() 
     );
     setCurrentPage(1);
   }, [searchTerm, contacts]);
@@ -68,8 +69,8 @@ const Contact: React.FC = () => {
       }
       const contactsResponse: IContacto[] = await Contacts.getAllContacts(token);
       if (Array.isArray(contactsResponse)) {
-        setContacts(contactsResponse);
-        setFilteredContacts(contactsResponse);
+        setContacts(contactsResponse); 
+        setFilteredContacts([...contactsResponse].reverse()); 
       } else {
         console.error("Invalid response format:", contactsResponse);
         setContacts([]);
@@ -128,6 +129,11 @@ const Contact: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedContact(null);
+  };
+
+  const handleContactsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setContactsPerPage(Number(e.target.value));
+    setCurrentPage(1);
   };
 
   const indexOfLastContact = currentPage * contactsPerPage;
@@ -196,11 +202,22 @@ const Contact: React.FC = () => {
       <Navbar />
       <div className="flex flex-1">
         <SidebarItems />
-        <main className="flex-1 p-6 max-w-5xl mx-auto">
+        <main className="flex-1 p-6 max-w-6xl mx-auto"> 
           <div className="bg-white rounded-xl shadow-md p-6 mt-10">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Gestión de Contactos Estratégicos</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-gray-800">Contactos Estratégicos</h2>
+                <select
+                  value={contactsPerPage}
+                  onChange={handleContactsPerPageChange}
+                  className="p-2 border cursor-pointer border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                >
+                  <option value={5}>5 por página</option>
+                  <option value={10}>10 por página</option>
+                  <option value={15}>15 por página</option>
+                </select>
+              </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <input
@@ -239,7 +256,7 @@ const Contact: React.FC = () => {
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="mt-2 text-gray-600">Cargando contactos...</p>
+                <p className="mt-2 text-gray-600">Cargando...</p>
               </div>
             ) : error ? (
               <div className="text-center py-8 text-red-600 font-medium">{error}</div>
