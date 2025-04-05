@@ -85,7 +85,7 @@ function Navbar() {
           >
             <div className="flex flex-col gap-2">
               <Link
-                to="/profile"
+                to="/perfil"
                 className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-all"
                 onClick={() => setIsDrawerOpen(false)} // Cierra el drawer después de hacer clic en un enlace
               >

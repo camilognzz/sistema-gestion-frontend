@@ -68,7 +68,7 @@ function Profile() {
                 </div>
                 {profileInfo.role === "ADMIN" && (
                   <div className="mt-6 flex justify-center">
-                    <Link to={`/update-user/${profileInfo.id}`}>
+                    <Link to={`/actualizar-usuario/${profileInfo.id}`}>
                       <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm">
                         Actualizar Perfil
                       </button>
@@ -79,7 +79,7 @@ function Profile() {
             ) : (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="mt-2 text-gray-600">Cargando perfil...</p>
+                <p className="mt-2 text-gray-600">Cargando...</p>
               </div>
             )}
           </div>

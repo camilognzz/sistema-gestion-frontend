@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Financials from "../service/Financials"; // Ajusta la ruta según tu estructura
+import Financials from "../service/Financials"; 
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 
-// Función para formatear el monto con dos decimales y símbolo de moneda
 const formatAmount = (amount: number): string => {
   return `$${amount.toFixed(2)}`;
 };
@@ -32,7 +31,7 @@ const Balance: React.FC = () => {
     } catch (error) {
       console.error("Error fetching balance:", error);
       setError("Error al obtener el balance. Por favor, intenta de nuevo.");
-      setBalance(0); // Valor por defecto en caso de error
+      setBalance(0); 
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +49,7 @@ const Balance: React.FC = () => {
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="mt-2 text-gray-600">Cargando balance...</p>
+                <p className="mt-2 text-gray-600">Cargando...</p>
               </div>
             ) : error ? (
               <div className="text-center py-8 text-red-600 font-medium">{error}</div>

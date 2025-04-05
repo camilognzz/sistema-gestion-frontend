@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Financials from "../service/Financials"; // Ajusta la ruta según tu estructura
-import Categories from "../service/Categories"; // Ajusta la ruta según tu estructura
+import Financials from "../service/Financials";
+import Categories from "../service/Categories";
 import { ITransactionCategory } from "./interface/ICategory";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
-import { IFinancialTransactionDTO } from "../financialspage/interface/IFinancial"; // Ajusta la ruta según tu estructura
+import { IFinancialTransactionDTO } from "../financialspage/interface/IFinancial";
+
+
+const formatAmount = (amount: number): string => {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+
+const parseCOPAmount = (value: string): number => {
+  const cleanedValue = value.replace(/[^\d]/g, "").replace(",", ".");
+  return parseFloat(cleanedValue) || 0;
+};
 
 const UpdateTransaction: React.FC = () => {
   const navigate = useNavigate();
@@ -19,9 +35,11 @@ const UpdateTransaction: React.FC = () => {
     categoryId: 0,
     transactionDate: "",
   });
+  const [displayAmount, setDisplayAmount] = useState(""); 
   const [categories, setCategories] = useState<ITransactionCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true); 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,6 +71,7 @@ const UpdateTransaction: React.FC = () => {
           categoryId: response.category?.id || 0,
           transactionDate: response.transactionDate,
         });
+        setDisplayAmount(formatAmount(response.amount)); 
         setLoading(false);
       } else {
         console.error("❌ No se encontró la transacción en la respuesta.");
@@ -67,6 +86,7 @@ const UpdateTransaction: React.FC = () => {
   };
 
   const fetchCategories = async () => {
+    setIsCategoriesLoading(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -78,6 +98,8 @@ const UpdateTransaction: React.FC = () => {
     } catch (err) {
       console.error("Error al cargar categorías:", err);
       setError("Error al cargar las categorías. Por favor, intenta de nuevo.");
+    } finally {
+      setIsCategoriesLoading(false);
     }
   };
 
@@ -85,10 +107,29 @@ const UpdateTransaction: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "amount" ? parseFloat(value) || 0 : name === "categoryId" ? parseInt(value) : value,
-    }));
+    if (name === "amount") {
+      const cleanedValue = value.replace(/[^\d]/g, ""); 
+      const parsedAmount = parseCOPAmount(cleanedValue);
+      setFormData((prev) => ({ ...prev, amount: parsedAmount }));
+      setDisplayAmount(formatAmount(parsedAmount));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: name === "categoryId" ? parseInt(value) : value,
+      }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.name === "amount") {
+      setDisplayAmount(formatAmount(formData.amount));
+    }
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.name === "amount") {
+      setDisplayAmount(formData.amount.toString());
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,7 +149,6 @@ const UpdateTransaction: React.FC = () => {
         return;
       }
 
-      // Validaciones básicas
       if (!formData.description.trim()) {
         setError("La descripción es obligatoria.");
         return;
@@ -170,7 +210,7 @@ const UpdateTransaction: React.FC = () => {
           <main className="flex-1 flex items-center justify-center p-6">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-              <p className="mt-2 text-gray-600">Cargando datos...</p>
+              <p className="mt-2 text-gray-600">Cargando...</p>
             </div>
           </main>
         </div>
@@ -213,14 +253,14 @@ const UpdateTransaction: React.FC = () => {
                   Monto
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="amount"
-                  value={formData.amount === 0 ? "" : formData.amount}
+                  value={displayAmount || (formData.amount === 0 ? "" : formatAmount(formData.amount))}
                   onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  onFocus={handleFocus}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 placeholder-gray-400"
                   required
-                  min="0.01"
-                  step="0.01"
                 />
               </div>
 
@@ -250,9 +290,11 @@ const UpdateTransaction: React.FC = () => {
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
                   required
-                  disabled={categories.length === 0}
+                  disabled={isCategoriesLoading || categories.length === 0}
                 >
-                  {categories.length === 0 ? (
+                  {isCategoriesLoading ? (
+                    <option value="0">Cargando categorías...</option>
+                  ) : categories.length === 0 ? (
                     <option value="0">No hay categorías disponibles</option>
                   ) : (
                     categories.map((category) => (
@@ -262,7 +304,7 @@ const UpdateTransaction: React.FC = () => {
                     ))
                   )}
                 </select>
-                {categories.length === 0 && (
+                {!isCategoriesLoading && categories.length === 0 && (
                   <p className="mt-1 text-sm text-red-500">
                     No se encontraron categorías. Crea una en "Agregar Categoría".
                   </p>

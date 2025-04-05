@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Financials from "../service/Financials"; // Ajusta la ruta según tu estructura
+import Financials from "../service/Financials";
 import {
   FaPlus,
   FaTrash,
@@ -21,20 +21,23 @@ import { saveAs } from "file-saver";
 import { Dialog, DialogBackdrop, DialogPanel, Transition } from "@headlessui/react";
 import SuccessModal from "../modals/SuccessModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
-import { IFinancialTransaction } from "../financialspage/interface/IFinancial"; // Ajusta la ruta según tu estructura
+import { IFinancialTransaction } from "../financialspage/interface/IFinancial";
 
-// Función para formatear la fecha de "YYYY-MM-DD" a "DD/MM/YYYY"
 const formatDate = (dateString: string): string => {
   const [year, month, day] = dateString.split("-");
   return `${day}/${month}/${year}`;
 };
 
-// Función para formatear el monto con dos decimales y símbolo de moneda
+// Función para formatear el monto en pesos colombianos (COP)
 const formatAmount = (amount: number): string => {
-  return `$${amount.toFixed(2)}`;
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
 };
 
-// Función para traducir el tipo de transacción y asignar color
 const getTransactionTypeStyle = (type: string) => {
   const translatedType = type === "INCOME" ? "Ingreso" : type === "EXPENSE" ? "Gasto" : type;
   const className = type === "INCOME" ? "text-green-600" : type === "EXPENSE" ? "text-red-600" : "text-gray-700";
@@ -46,6 +49,7 @@ const Financial: React.FC = () => {
   const [filteredTransactions, setFilteredTransactions] = useState<IFinancialTransaction[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [transactionsPerPage, setTransactionsPerPage] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedTransaction, setSelectedTransaction] = useState<IFinancialTransaction | null>(null);
@@ -56,9 +60,7 @@ const Financial: React.FC = () => {
   const [balance, setBalance] = useState<number>(0);
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [balanceError, setBalanceError] = useState<string | null>(null);
-  const transactionsPerPage = 7;
 
-  // Rango de fechas por defecto: último mes
   const defaultEndDate = new Date().toISOString().split("T")[0];
   const defaultStartDate = new Date(new Date().setMonth(new Date().getMonth() - 1))
     .toISOString()
@@ -71,9 +73,11 @@ const Financial: React.FC = () => {
 
   useEffect(() => {
     setFilteredTransactions(
-      transactions.filter((transaction) =>
-        transaction.description.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      transactions
+        .filter((transaction) =>
+          transaction.description.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .reverse()
     );
     setCurrentPage(1);
   }, [searchTerm, transactions]);
@@ -95,7 +99,7 @@ const Financial: React.FC = () => {
       );
       if (Array.isArray(transactionsResponse)) {
         setTransactions(transactionsResponse);
-        setFilteredTransactions(transactionsResponse);
+        setFilteredTransactions([...transactionsResponse].reverse());
       } else {
         console.error("Invalid response format:", transactionsResponse);
         setTransactions([]);
@@ -148,7 +152,7 @@ const Financial: React.FC = () => {
       }
       await Financials.deleteTransaction(transactionIdToDelete, token);
       await fetchTransactions();
-      await fetchBalance(); // Actualizar balance tras eliminar
+      await fetchBalance();
       setIsDeleteModalOpen(false);
       setTimeout(() => setIsSuccessModalOpen(true), 300);
     } catch (error) {
@@ -176,6 +180,11 @@ const Financial: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedTransaction(null);
+  };
+
+  const handleTransactionsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTransactionsPerPage(Number(e.target.value));
+    setCurrentPage(1);
   };
 
   const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -217,7 +226,6 @@ const Financial: React.FC = () => {
     doc.save("reporte_transacciones.pdf");
   };
 
-
   const exportToExcel = () => {
     const filteredTransactionsExcel = transactions.map(
       ({ id, description, amount, type, category, transactionDate }) => ({
@@ -252,40 +260,50 @@ const Financial: React.FC = () => {
       <Navbar />
       <div className="flex flex-1">
         <SidebarItems />
-        <main className="flex-1 p-6 max-w-5xl mx-auto">
+        <main className="flex-1 p-6 max-w-6xl mx-auto"> 
           <div className="bg-white rounded-xl shadow-md p-6 mt-10">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <Link
-                  to="/categorias"
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-sm"
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-gray-800">Finanzas</h2>
+                <select
+                  value={transactionsPerPage}
+                  onChange={handleTransactionsPerPageChange}
+                  className="p-2 border cursor-pointer border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
                 >
-                  Ver Categorías
-                </Link>
-                <Link
-                  to="/crear-categoria"
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm"
-                >
-                  <FaPlus /> Agregar Categoría
-                </Link>
+                  <option value={5}>5 por página</option>
+                  <option value={10}>10 por página</option>
+                  <option value={15}>15 por página</option>
+                </select>
               </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <input
                     type="text"
                     placeholder="Buscar por descripción..."
-                    className="w-72 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 placeholder-gray-400"
+                    className="w-70 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 placeholder-gray-400"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                   <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 </div>
                 <Link
+                  to="/categorias"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-sm"
+                >
+                  Categorías
+                </Link>
+                <Link
+                  to="/crear-categoria"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm"
+                >
+                  <FaPlus /> Categoría
+                </Link>
+                <Link
                   to="/crear-transaccion"
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm"
                 >
-                  <FaPlus /> Nueva Transacción
+                  <FaPlus /> Transacción
                 </Link>
                 <button
                   onClick={exportToPDF}
@@ -308,7 +326,7 @@ const Financial: React.FC = () => {
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="mt-2 text-gray-600">Cargando transacciones...</p>
+                <p className="mt-2 text-gray-600">Cargando...</p>
               </div>
             ) : error ? (
               <div className="text-center py-8 text-red-600 font-medium">{error}</div>
@@ -388,20 +406,22 @@ const Financial: React.FC = () => {
                     <button
                       onClick={prevPage}
                       disabled={currentPage === 1}
-                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage === 1
+                      className={`p-2 rounded-lg transition-all duration-200 ${
+                        currentPage === 1
                           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                           : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                        }`}
+                      }`}
                     >
                       <FaChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={nextPage}
                       disabled={currentPage >= Math.ceil(filteredTransactions.length / transactionsPerPage)}
-                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage >= Math.ceil(filteredTransactions.length / transactionsPerPage)
+                      className={`p-2 rounded-lg transition-all duration-200 ${
+                        currentPage >= Math.ceil(filteredTransactions.length / transactionsPerPage)
                           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                           : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                        }`}
+                      }`}
                     >
                       <FaChevronRight className="w-5 h-5" />
                     </button>
@@ -413,16 +433,15 @@ const Financial: React.FC = () => {
                   {balanceLoading ? (
                     <div className="text-center">
                       <div className="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
-                      <p className="mt-2 text-gray-600">Cargando balance...</p>
+                      <p className="mt-2 text-gray-600">Cargando...</p>
                     </div>
                   ) : balanceError ? (
                     <div className="text-center text-red-600 font-medium">{balanceError}</div>
                   ) : (
                     <div className="text-center">
-                      <p className="text-lg text-gray-600 mb-2">Balance Actual (Ingresos - Gastos):</p>
+                      <p className="text-lg text-gray-600 font-bold mb-2">Balance Actual:</p>
                       <p
-                        className={`text-2xl font-bold ${balance >= 0 ? "text-green-600" : "text-red-600"
-                          }`}
+                        className={`text-2xl font-bold ${balance >= 0 ? "text-green-600" : "text-red-600"}`}
                       >
                         {formatAmount(balance)}
                       </p>

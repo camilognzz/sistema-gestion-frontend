@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Categories from "../service/Categories"; // Ajusta la ruta según tu estructura
+import Categories from "../service/Categories"; 
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
 import { ICategoryDTO } from "../financialspage/interface/ICategory";
 import axios from "axios";
 
-// Tipos para los errores de validación
+
 interface FormErrors {
   name?: string;
   description?: string;
@@ -17,18 +17,18 @@ const UpdateCategory: React.FC = () => {
   const navigate = useNavigate();
   const { categoryId } = useParams<{ categoryId: string }>();
 
-  // Estado inicial del formulario alineado con ICategoryDTO
+  
   const [formData, setFormData] = useState<ICategoryDTO>({
     name: "",
     description: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(true); // Para la carga inicial
-  const [isUpdating, setIsUpdating] = useState(false); // Para el estado de actualización
+  const [isLoading, setIsLoading] = useState(true); 
+  const [isUpdating, setIsUpdating] = useState(false); 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  // Cargar datos de la categoría al montar el componente
+  
   useEffect(() => {
     if (categoryId) {
       fetchCategoryDataById(categoryId);
@@ -61,17 +61,17 @@ const UpdateCategory: React.FC = () => {
     }
   };
 
-  // Manejo de cambios en los inputs con useCallback para optimizar rendimiento
+  
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
-      setErrors((prev) => ({ ...prev, [name]: undefined })); // Limpiar error al cambiar
+      setErrors((prev) => ({ ...prev, [name]: undefined })); 
     },
     []
   );
 
-  // Validación del formulario
+  
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
     if (!formData.name.trim()) {
@@ -80,7 +80,7 @@ const UpdateCategory: React.FC = () => {
     return newErrors;
   };
 
-  // Manejo del envío del formulario
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUpdating(true);
@@ -106,7 +106,7 @@ const UpdateCategory: React.FC = () => {
         return;
       }
 
-      // Preparar datos para enviar (description vacía como undefined para el backend)
+      
       const categoryData: ICategoryDTO = {
         name: formData.name,
         description: formData.description!.trim() === "" ? undefined : formData.description,
@@ -135,12 +135,12 @@ const UpdateCategory: React.FC = () => {
     }
   };
 
-  // Manejo de cancelación
+  
   const handleCancel = useCallback(() => {
     navigate("/categorias");
   }, [navigate]);
 
-  // Cerrar modal de éxito
+  
   const closeSuccessModal = useCallback(() => {
     setIsSuccessModalOpen(false);
     navigate("/categorias");
@@ -155,7 +155,7 @@ const UpdateCategory: React.FC = () => {
           <main className="flex-1 flex items-center justify-center p-6">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-              <p className="mt-2 text-gray-600">Cargando datos...</p>
+              <p className="mt-2 text-gray-600">Cargando...</p>
             </div>
           </main>
         </div>

@@ -11,6 +11,7 @@ import {
   FaFilePdf,
   FaFileExcel,
   FaEye,
+  FaArrowLeft, // Nuevo ícono para el botón "Atrás"
 } from "react-icons/fa";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
@@ -28,6 +29,7 @@ const Category: React.FC = () => {
   const [filteredCategories, setFilteredCategories] = useState<ITransactionCategory[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [categoriesPerPage, setCategoriesPerPage] = useState(5); // Valor inicial ajustable
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<ITransactionCategory | null>(null);
@@ -35,7 +37,6 @@ const Category: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [categoryIdToDelete, setCategoryIdToDelete] = useState<number | null>(null);
-  const categoriesPerPage = 7;
 
   useEffect(() => {
     fetchCategories();
@@ -43,9 +44,11 @@ const Category: React.FC = () => {
 
   useEffect(() => {
     setFilteredCategories(
-      categories.filter((category) =>
-        category.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      categories
+        .filter((category) =>
+          category.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .reverse() // Ordenar del último al primero
     );
     setCurrentPage(1);
   }, [searchTerm, categories]);
@@ -62,7 +65,7 @@ const Category: React.FC = () => {
       }
       const categoriesResponse = await Categories.getAllCategories(token);
       setCategories(categoriesResponse);
-      setFilteredCategories(categoriesResponse);
+      setFilteredCategories([...categoriesResponse].reverse()); // Orden inverso inicial
     } catch (error) {
       console.error("Error fetching categories:", error);
       setCategories([]);
@@ -116,6 +119,11 @@ const Category: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedCategory(null);
+  };
+
+  const handleCategoriesPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategoriesPerPage(Number(e.target.value));
+    setCurrentPage(1);
   };
 
   const indexOfLastCategory = currentPage * categoriesPerPage;
@@ -176,7 +184,18 @@ const Category: React.FC = () => {
           <div className="bg-white rounded-xl shadow-md p-6 mt-10">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Gestión de Categorías</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-gray-800">Categorías</h2>
+                <select
+                  value={categoriesPerPage}
+                  onChange={handleCategoriesPerPageChange}
+                  className="p-2 border cursor-pointer border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"
+                >
+                  <option value={5}>5 por página</option>
+                  <option value={10}>10 por página</option>
+                  <option value={15}>15 por página</option>
+                </select>
+              </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <input
@@ -188,6 +207,12 @@ const Category: React.FC = () => {
                   />
                   <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 </div>
+                <Link
+                  to="/finanzas"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-sm"
+                >
+                  <FaArrowLeft /> Atrás
+                </Link>
                 <Link
                   to="/crear-categoria"
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm"
@@ -215,7 +240,7 @@ const Category: React.FC = () => {
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="mt-2 text-gray-600">Cargando categorías...</p>
+                <p className="mt-2 text-gray-600">Cargando...</p>
               </div>
             ) : error ? (
               <div className="text-center py-8 text-red-600 font-medium">{error}</div>
