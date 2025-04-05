@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import Users from "../service/Users";
 import { useNavigate } from "react-router-dom";
+import Users from "../service/Users";
 import { ProfileContextType, UserProfile } from "./interface/IProfileContext";
+
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
@@ -9,26 +10,27 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [showInactivityModal, setShowInactivityModal] = useState(false);
+  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
 
   const navigate = useNavigate();
-  const INACTIVITY_TIMEOUT = 5 * 1000; // 2 horas
-  const MODAL_DISPLAY_TIME = 5000; // 5 segundos
-
-  let inactivityTimer: ReturnType<typeof setTimeout>;
+  const INACTIVITY_TIMEOUT = 1 * 60 * 60 * 1000; 
+  const MODAL_DISPLAY_TIME = 3 * 1000; 
 
   const fetchProfileInfo = async () => {
     try {
       const token = localStorage.getItem("token") ?? "";
       if (!token) {
+        console.log("No token found");
         setProfile(null);
         setLoading(false);
         return;
       }
 
       const response: UserProfile = await Users.getYourProfile(token);
+      console.log("Profile fetched:", response);
       setProfile(response);
     } catch (error) {
-      console.error("Error fetching profile information:", error);
+      console.error("Error fetching profile:", error);
       setProfile(null);
     } finally {
       setLoading(false);
@@ -36,60 +38,80 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
+    console.log("Logging out...");
+    if (inactivityTimer) clearTimeout(inactivityTimer);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("role");
     setProfile(null);
+    setShowInactivityModal(false);
+    setInactivityTimer(null);
     navigate("/login");
   };
 
-  const resetInactivityTimer = () => {
-    clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(() => {
-      if (profile) {
-        console.log("⏰ Tiempo de inactividad alcanzado. Mostrando modal...");
+  const startInactivityTimer = () => {
+    if (inactivityTimer) {
+      console.log("Clearing existing timer:", inactivityTimer);
+      clearTimeout(inactivityTimer);
+    }
+
+    if (profile) {
+      console.log("Starting inactivity timer for", INACTIVITY_TIMEOUT / 1000, "seconds");
+      const timer = setTimeout(() => {
+        console.log("Inactivity timeout reached, showing modal");
         setShowInactivityModal(true);
         setTimeout(() => {
+          console.log("Modal timeout reached, logging out");
           logout();
         }, MODAL_DISPLAY_TIME);
-      }
-    }, INACTIVITY_TIMEOUT);
+      }, INACTIVITY_TIMEOUT);
+      setInactivityTimer(timer);
+    } else {
+      console.log("No profile, not starting timer");
+    }
   };
 
   const handleActivity = () => {
-    resetInactivityTimer();
+    console.log("Activity detected");
+    startInactivityTimer(); // Reinicia el temporizador con cada actividad
   };
 
   useEffect(() => {
+    console.log("Initial useEffect running");
     fetchProfileInfo();
-    resetInactivityTimer();
 
+    // Configurar listeners de actividad
     window.addEventListener("mousemove", handleActivity);
     window.addEventListener("keydown", handleActivity);
     window.addEventListener("click", handleActivity);
     window.addEventListener("scroll", handleActivity);
 
     return () => {
-      clearTimeout(inactivityTimer);
+      console.log("Cleaning up initial useEffect");
+      if (inactivityTimer) clearTimeout(inactivityTimer);
       window.removeEventListener("mousemove", handleActivity);
       window.removeEventListener("keydown", handleActivity);
       window.removeEventListener("click", handleActivity);
       window.removeEventListener("scroll", handleActivity);
     };
-  }, []);
+  }, []); // Solo se ejecuta al montar
+
+  useEffect(() => {
+    console.log("Profile updated:", profile);
+    startInactivityTimer(); // Reinicia el temporizador cuando cambia el perfil
+  }, [profile]);
 
   const updateProfile = async () => {
     setLoading(true);
     await fetchProfileInfo();
-    resetInactivityTimer();
   };
 
   return (
-    <ProfileContext.Provider value={{ profile, loading, updateProfile }}>
+    <ProfileContext.Provider value={{ profile, loading, logout, updateProfile }}>
       <>
         {children}
         {showInactivityModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-500/75 z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm mx-auto">
               <h2 className="text-xl font-semibold mb-4">Sesión expirada</h2>
               <p className="text-gray-700">Tu sesión ha expirado por inactividad.</p>

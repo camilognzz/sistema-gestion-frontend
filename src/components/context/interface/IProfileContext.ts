@@ -8,5 +8,6 @@ export interface UserProfile {
 export interface ProfileContextType {
   profile: UserProfile | null;
   loading: boolean;
+  logout: () => void;
   updateProfile: () => Promise<void>;
 }
