@@ -1,18 +1,17 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Login } from './components/auth/Login';
-import Registration from './components/auth/Registration';
-import Users from './components/service/Users';
-import Update from './components/userspage/Update';
-import Management from './components/userspage/Management';
-import Profile from './components/userspage/Profile';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Login } from "./components/auth/Login";
+import Registration from "./components/auth/Registration";
+import Update from "./components/userspage/Update";
+import Management from "./components/userspage/Management";
+import Profile from "./components/userspage/Profile";
 import Project from "./components/projectspage/Project";
 import CreateProject from "./components/projectspage/CreateProject";
 import UpdateProject from "./components/projectspage/UpdateProject";
-import  Contact  from "./components/contactspage/Contact";
-import  CreateContact  from "./components/contactspage/CreateContact";
-import  UpdateContact  from "./components/contactspage/UpdateContact";
+import Contact from "./components/contactspage/Contact";
+import CreateContact from "./components/contactspage/CreateContact";
+import UpdateContact from "./components/contactspage/UpdateContact";
 import Volunteer from "./components/volunteerspage/Volunteer";
-import  CreateVolunteer  from "./components/volunteerspage/CreateVolunteer";
+import CreateVolunteer from "./components/volunteerspage/CreateVolunteer";
 import UpdateVolunteer from "./components/volunteerspage/UpdateVolunteer";
 import Financial from "./components/financialspage/Financial";
 import Balance from "./components/financialspage/Balance";
@@ -22,32 +21,36 @@ import CreateCategory from "./components/financialspage/CreateCategory";
 import UpdateCategory from "./components/financialspage/UpdateCategory";
 import UpdateTransaction from "./components/financialspage/UpdateTransaction";
 import { ProfileProvider } from "./components/context/ProfileContext";
-
-
+import { ProtectedRoute } from "./components/routes/ProtectedRoute"; 
+import { AdminRoute } from "./components/routes/AdminRoute"; 
 
 function App() {
   return (
     <BrowserRouter>
       <div className="App">
         <div className="content">
-        <ProfileProvider>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/perfil" element={<Profile />} />
-            <Route path="/proyectos" element={<Project />} />
-            <Route path="/crear-proyecto" element={<CreateProject />} />
-            <Route path="/actualizar-proyecto/:projectId" element={<UpdateProject />} />
-            <Route path="/contactos" element={<Contact />} />
-            <Route path="/crear-contacto" element={<CreateContact />} />
-            <Route path="/actualizar-contacto/:contactId" element={<UpdateContact />} />
-            <Route path="/voluntarios" element={<Volunteer />} />
-            <Route path="/crear-voluntario" element={<CreateVolunteer />} />
-            <Route path="/actualizar-voluntario/:volunteerId" element={<UpdateVolunteer />} />
+          <ProfileProvider>
+            <Routes>
+              {/* Rutas públicas */}
+              <Route path="/" element={<Login />} />
+              <Route path="/login" element={<Login />} />
 
-            {/* Admin-only routes */}
-            {Users.adminOnly() && (
-              <>
+              {/* Rutas protegidas (requieren autenticación) */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/perfil" element={<Profile />} />
+                <Route path="/proyectos" element={<Project />} />
+                <Route path="/crear-proyecto" element={<CreateProject />} />
+                <Route path="/actualizar-proyecto/:projectId" element={<UpdateProject />} />
+                <Route path="/contactos" element={<Contact />} />
+                <Route path="/crear-contacto" element={<CreateContact />} />
+                <Route path="/actualizar-contacto/:contactId" element={<UpdateContact />} />
+                <Route path="/voluntarios" element={<Volunteer />} />
+                <Route path="/crear-voluntario" element={<CreateVolunteer />} />
+                <Route path="/actualizar-voluntario/:volunteerId" element={<UpdateVolunteer />} />
+              </Route>
+
+              {/* Rutas exclusivas para ADMIN */}
+              <Route element={<AdminRoute />}>
                 <Route path="/registro" element={<Registration />} />
                 <Route path="/usuarios" element={<Management />} />
                 <Route path="/actualizar-usuario/:userId" element={<Update />} />
@@ -58,15 +61,14 @@ function App() {
                 <Route path="/categorias" element={<Categories />} />
                 <Route path="/crear-categoria" element={<CreateCategory />} />
                 <Route path="/actualizar-categoria/:categoryId" element={<UpdateCategory />} />
-              </>
-            )}
+              </Route>
 
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
+            </Routes>
           </ProfileProvider>
         </div>
       </div>
     </BrowserRouter>
   );
 }
+
 export default App;

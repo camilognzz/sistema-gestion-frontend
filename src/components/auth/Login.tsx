@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Users from "../service/Users";
 import { Eye, EyeOff } from "lucide-react";
+import { useProfile } from "../context/ProfileContext"; // Ajusta la ruta
 
 interface LoginResponse {
   token: string;
@@ -21,6 +22,7 @@ export const Login = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const { updateProfile } = useProfile(); // Obtenemos updateProfile del contexto
 
   useEffect(() => {
     if (isBlocked) {
@@ -46,12 +48,13 @@ export const Login = () => {
 
     try {
       setIsLoading(true);
-      const userData: LoginResponse = await Users.login(email, password); // Tipamos userData
+      const userData: LoginResponse = await Users.login(email, password);
       if (userData.token) {
         localStorage.setItem("token", userData.token);
-        if (userData.user && userData.user.role) { // Verificamos que user y role existan
+        if (userData.user && userData.user.role) {
           localStorage.setItem("role", userData.user.role);
         }
+        await updateProfile(); // Actualizamos el perfil en el contexto
         setTimeout(() => {
           navigate("/perfil");
         }, 1000);
@@ -93,18 +96,15 @@ export const Login = () => {
             alt="Logo Fundación Habacuc"
             className="w-24 h-24 mb-6"
           />
-
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
             Iniciar Sesión
           </h2>
-
           {isBlocked && (
             <p className="text-red-600 text-sm font-medium text-center mb-4">
               Demasiados intentos fallidos. Intente nuevamente en {timer}{" "}
               segundos.
             </p>
           )}
-
           <form onSubmit={handleSubmit} className="w-full space-y-6">
             <div>
               <label
@@ -124,7 +124,6 @@ export const Login = () => {
                 disabled={isBlocked || isLoading}
               />
             </div>
-
             <div>
               <label
                 htmlFor="password"
@@ -157,13 +156,11 @@ export const Login = () => {
                 </button>
               </div>
             </div>
-
             {error && (
               <p className="text-red-600 text-sm font-medium text-center">
                 {error}
               </p>
             )}
-
             <div className="flex justify-end">
               <button
                 type="submit"
@@ -181,7 +178,6 @@ export const Login = () => {
               </button>
             </div>
           </form>
-
           <div className="mt-6 text-sm text-gray-600 text-center">
             Powered by
             <a

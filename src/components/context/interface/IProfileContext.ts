@@ -8,4 +8,5 @@ export interface UserProfile {
 export interface ProfileContextType {
   profile: UserProfile | null;
   loading: boolean;
+  updateProfile: () => Promise<void>;
 }
