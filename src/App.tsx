@@ -21,6 +21,7 @@ import Categories from "./components/financialspage/Categories";
 import CreateCategory from "./components/financialspage/CreateCategory";
 import UpdateCategory from "./components/financialspage/UpdateCategory";
 import UpdateTransaction from "./components/financialspage/UpdateTransaction";
+import { ProfileProvider } from "./components/context/ProfileContext";
 
 
 
@@ -29,6 +30,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <div className="content">
+        <ProfileProvider>
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
@@ -61,6 +63,7 @@ function App() {
 
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
+          </ProfileProvider>
         </div>
       </div>
     </BrowserRouter>

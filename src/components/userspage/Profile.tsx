@@ -68,11 +68,21 @@ function Profile() {
                 </div>
                 {profileInfo.role === "ADMIN" && (
                   <div className="mt-6 flex justify-center">
-                    <Link to={`/actualizar-usuario/${profileInfo.id}`}>
-                      <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm">
+                    {profileInfo.id === 2 ? (
+                      <button
+                        className="px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed shadow-sm"
+                        disabled
+                        title="No se puede actualizar este perfil"
+                      >
                         Actualizar Perfil
                       </button>
-                    </Link>
+                    ) : (
+                      <Link to={`/actualizar-usuario/${profileInfo.id}`}>
+                        <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm">
+                          Actualizar Perfil
+                        </button>
+                      </Link>
+                    )}
                   </div>
                 )}
               </>

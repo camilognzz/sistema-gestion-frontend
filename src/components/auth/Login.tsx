@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Users from "../service/Users"; // Ajusta la ruta si es necesario
-import { Eye, EyeOff } from "lucide-react"; // Instala lucide-react si no lo tienes
+import Users from "../service/Users";
+import { Eye, EyeOff } from "lucide-react";
+
+interface LoginResponse {
+  token: string;
+  user?: {
+    role: string;
+  };
+}
 
 export const Login = () => {
   const [email, setEmail] = useState<string>("");
@@ -39,15 +46,15 @@ export const Login = () => {
 
     try {
       setIsLoading(true);
-      const userData = await Users.login(email, password);
+      const userData: LoginResponse = await Users.login(email, password); // Tipamos userData
       if (userData.token) {
         localStorage.setItem("token", userData.token);
-        if (userData.user) {
+        if (userData.user && userData.user.role) { // Verificamos que user y role existan
           localStorage.setItem("role", userData.user.role);
         }
         setTimeout(() => {
           navigate("/perfil");
-        }, 1000); // Retraso de 1 segundo para mostrar la carga
+        }, 1000);
       } else {
         setError("Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
         setEmail("");

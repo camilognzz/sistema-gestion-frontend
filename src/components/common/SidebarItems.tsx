@@ -1,46 +1,24 @@
-import { useEffect, useState } from "react";
-import Sidebar, { SidebarItem } from "../common/Sidebar";
+import Sidebar, { SidebarItem } from "../common/Sidebar"; 
 import { User, Briefcase, Mail, Users as UsersIcon, DollarSign } from "lucide-react";
-import Users from "../service/Users";
 import { Link } from "react-router-dom";
-
-
-interface UserProfile {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-}
+import { useProfile } from "../context/ProfileContext"; 
 
 export const SidebarItems = () => {
-  const [profileInfo, setProfileInfo] = useState<UserProfile | null>(null);
+  const { profile, loading } = useProfile();
 
-  useEffect(() => {
-    fetchProfileInfo();
-  }, []);
-
-  const fetchProfileInfo = async () => {
-    try {
-      const token = localStorage.getItem("token") ?? "";
-
-      if (!token) {
-        console.error("No authentication token found.");
-        return;
-      }
-
-      const response: UserProfile = await Users.getYourProfile(token);
-      console.log("Perfil obtenido:", response);
-
-      setProfileInfo(response);
-    } catch (error) {
-      console.error("Error fetching profile information:", error);
-    }
-  };
+  
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <Sidebar>
-        {profileInfo?.role === "ADMIN" && (
+        {profile?.role === "ADMIN" && (
           <Link to={"/usuarios"}>
             <SidebarItem icon={<User size={20} />} text="Usuarios" />
           </Link>
@@ -54,12 +32,12 @@ export const SidebarItems = () => {
         <Link to={"/voluntarios"}>
           <SidebarItem icon={<UsersIcon size={20} />} text="Voluntarios" />
         </Link>
-        {profileInfo?.role === "ADMIN" && (
+        {profile?.role === "ADMIN" && (
           <Link to={"/finanzas"}>
             <SidebarItem icon={<DollarSign size={20} />} text="Finanzas" />
           </Link>
         )}
       </Sidebar>
     </div>
-  )
-}
+  );
+};
