@@ -1,54 +1,28 @@
-# React + TypeScript + Vite
+# 📘 Sistema de Gestión - Fundación Habacuc
+Este sistema web ha sido desarrollado para optimizar la administración de proyectos, usuarios y actividades de la Fundación Habacuc, una organización dedicada a promover el arte como herramienta de transformación social.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+✨ Funcionalidades principales
+Gestión de usuarios: Registro, autenticación y control de acceso mediante roles (administrador y usuario).
 
-Currently, two official plugins are available:
+Módulo de proyectos: Creación, seguimiento y actualización de proyectos artísticos y sociales.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Control de estado de los proyectos: Visualización del avance por estados (Sin Iniciar, En Progreso, Terminado, Cancelado).
 
-## Expanding the ESLint configuration
+Registro de responsables: Asignación de líderes por proyecto para mayor trazabilidad.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Sistema de seguridad: Inicio de sesión con token JWT y cifrado de contraseñas con BCrypt.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Cierre de sesión automático: Por inactividad del usuario para mayor seguridad.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🛠️ Tecnologías utilizadas
+Frontend: React + Tailwind CSS + Vite (o Create React App)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Backend: Spring Boot + Spring Security + JWT
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+Base de datos: MySQL
+
+ORM: Hibernate / JPA
+
+🚀 Objetivo
+El sistema busca brindar a la fundación una herramienta intuitiva y segura para registrar, monitorear y dar seguimiento a los proyectos sociales y culturales que desarrolla, fortaleciendo así su impacto en la comunidad.
+
