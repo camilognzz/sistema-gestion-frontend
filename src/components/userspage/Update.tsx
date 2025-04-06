@@ -20,8 +20,7 @@ function Update() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   useEffect(() => {
-    if (userId === "2") {
-      // Redirigir a /usuarios si el userId es 2
+    if (userId === "1") {
       navigate("/usuarios");
       return;
     }
@@ -39,7 +38,6 @@ function Update() {
       }
 
       const response = await Users.getUserById(userId, token);
-      console.log("✅ API Response:", response);
 
       if (response && response.user) {
         const { name = "", email = "", role = "" } = response.user;
@@ -78,7 +76,6 @@ function Update() {
 
       setUpdating(true);
       await Users.updateUser(Number(userId), userData, token);
-      console.log("✅ User updated");
       setUpdating(false);
       setIsSuccessModalOpen(true);
 

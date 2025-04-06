@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Volunteers from "../service/Volunteers"; 
+import Volunteers from "../service/Volunteers";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
-import { IVoluntario } from "../volunteerspage/interface/IVoluntario"; 
+import { IVoluntario } from "../volunteerspage/interface/IVoluntario";
 import axios from "axios";
 
 
@@ -20,7 +20,7 @@ interface FormErrors {
 const CreateVolunteer: React.FC = () => {
   const navigate = useNavigate();
 
-  
+
   const [formData, setFormData] = useState<IVoluntario>({
     documentoIdentidad: "",
     nombre: "",
@@ -38,17 +38,17 @@ const CreateVolunteer: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
-      setErrors((prev) => ({ ...prev, [name]: undefined })); 
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     },
     []
   );
 
-  
+
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
     if (!formData.documentoIdentidad.trim()) {
@@ -72,7 +72,7 @@ const CreateVolunteer: React.FC = () => {
     return newErrors;
   };
 
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -92,7 +92,7 @@ const CreateVolunteer: React.FC = () => {
         return;
       }
 
-      
+
       const volunteerData: IVoluntario = {
         documentoIdentidad: formData.documentoIdentidad,
         nombre: formData.nombre,
@@ -106,7 +106,6 @@ const CreateVolunteer: React.FC = () => {
         fechaRegistro: formData.fechaRegistro,
       };
 
-      console.log("Datos enviados al backend:", JSON.stringify(volunteerData, null, 2));
       const response = await Volunteers.createVolunteer(volunteerData, token);
       console.log("Respuesta del backend:", JSON.stringify(response, null, 2));
 
@@ -125,12 +124,12 @@ const CreateVolunteer: React.FC = () => {
     }
   };
 
-  
+
   const handleCancel = useCallback(() => {
     navigate("/voluntarios");
   }, [navigate]);
 
-  
+
   const closeSuccessModal = useCallback(() => {
     setIsSuccessModalOpen(false);
     navigate("/voluntarios");
@@ -148,18 +147,17 @@ const CreateVolunteer: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="documentoIdentidad" className="block text-sm font-medium text-gray-700">
-                  Documento de Identidad 
+                  Documento de Identidad
                 </label>
                 <input
-                  type="number" 
+                  type="number"
                   id="documentoIdentidad"
                   name="documentoIdentidad"
                   value={formData.documentoIdentidad}
                   onChange={handleChange}
                   required
-                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${
-                    errors.documentoIdentidad ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${errors.documentoIdentidad ? "border-red-500" : "border-gray-300"
+                    }`}
                   placeholder="Ingrese el documento de identidad"
                   disabled={isLoading}
                 />
@@ -167,7 +165,7 @@ const CreateVolunteer: React.FC = () => {
 
               <div>
                 <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">
-                  Nombre 
+                  Nombre
                 </label>
                 <input
                   type="text"
@@ -176,9 +174,8 @@ const CreateVolunteer: React.FC = () => {
                   value={formData.nombre}
                   onChange={handleChange}
                   required
-                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${
-                    errors.nombre ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${errors.nombre ? "border-red-500" : "border-gray-300"
+                    }`}
                   placeholder="Ingrese el nombre del voluntario"
                   disabled={isLoading}
                 />
@@ -194,9 +191,8 @@ const CreateVolunteer: React.FC = () => {
                   name="email"
                   value={formData.email ?? ""}
                   onChange={handleChange}
-                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${
-                    errors.email ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${errors.email ? "border-red-500" : "border-gray-300"
+                    }`}
                   placeholder="Ingrese el email del voluntario"
                   disabled={isLoading}
                 />
@@ -204,18 +200,17 @@ const CreateVolunteer: React.FC = () => {
 
               <div>
                 <label htmlFor="telefono" className="block text-sm font-medium text-gray-700">
-                  Teléfono 
+                  Teléfono
                 </label>
                 <input
-                  type="number" 
+                  type="number"
                   id="telefono"
                   name="telefono"
                   value={formData.telefono}
                   onChange={handleChange}
                   required
-                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${
-                    errors.telefono ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${errors.telefono ? "border-red-500" : "border-gray-300"
+                    }`}
                   placeholder="Ingrese el teléfono del voluntario"
                   disabled={isLoading}
                 />
@@ -289,7 +284,7 @@ const CreateVolunteer: React.FC = () => {
 
               <div>
                 <label htmlFor="disponibilidad" className="block text-sm font-medium text-gray-700">
-                  Disponibilidad 
+                  Disponibilidad
                 </label>
                 <select
                   id="disponibilidad"
@@ -297,9 +292,8 @@ const CreateVolunteer: React.FC = () => {
                   value={formData.disponibilidad}
                   onChange={handleChange}
                   required
-                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 cursor-pointer ${
-                    errors.disponibilidad ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 cursor-pointer ${errors.disponibilidad ? "border-red-500" : "border-gray-300"
+                    }`}
                   disabled={isLoading}
                 >
                   <option value="TIEMPO_COMPLETO">Tiempo Completo</option>
@@ -310,7 +304,7 @@ const CreateVolunteer: React.FC = () => {
 
               <div>
                 <label htmlFor="fechaRegistro" className="block text-sm font-medium text-gray-700">
-                  Fecha de Registro 
+                  Fecha de Registro
                 </label>
                 <input
                   type="date"
@@ -319,9 +313,8 @@ const CreateVolunteer: React.FC = () => {
                   value={formData.fechaRegistro}
                   onChange={handleChange}
                   required
-                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${
-                    errors.fechaRegistro ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${errors.fechaRegistro ? "border-red-500" : "border-gray-300"
+                    }`}
                   disabled={isLoading}
                 />
               </div>

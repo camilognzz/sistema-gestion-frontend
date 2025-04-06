@@ -7,7 +7,7 @@ interface LoginResponse {
     name: string;
     email: string;
     role: string;
-    profilePicture?: string; // Añadido para soportar la foto de perfil
+    profilePicture?: string;
   };
   error?: string;
 }
@@ -17,7 +17,7 @@ export interface UserRegisterData {
   email: string;
   password?: string;
   role: string;
-  profilePicture?: File | null; // Añadido para manejar el archivo de imagen
+  profilePicture?: File | null;
 }
 
 export interface User {
@@ -26,13 +26,12 @@ export interface User {
   email: string;
   role: string;
   password?: string;
-  profilePicture?: string; // Añadido para la respuesta del servidor
+  profilePicture?: string;
 }
 
 class Users {
   private static readonly BASE_URL = "http://localhost:8080";
 
-  /** 🔹 Función auxiliar para manejar errores */
   private static handleError(error: unknown): never {
     if (axios.isAxiosError(error)) {
       console.error(
@@ -45,36 +44,29 @@ class Users {
     throw new Error("Error desconocido");
   }
 
- /** 🔹 Login */
- static async login(email: string, password: string) {
-  try {
-    const response = await axios.post(`${Users.BASE_URL}/auth/login`, {
-      email,
-      password,
-    });
+  static async login(email: string, password: string) {
+    try {
+      const response = await axios.post(`${Users.BASE_URL}/auth/login`, {
+        email,
+        password,
+      });
 
-    console.log("🔍 Respuesta del backend:", response.data);
+      const { token, role } = response.data;
 
-    const { token, role } = response.data; // Extraer datos correctamente
+      if (!token || !role) {
+        throw new Error("❌ No se recibió token o rol válido");
+      }
 
-    if (!token || !role) {
-      throw new Error("❌ No se recibió token o rol válido");
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      return { token, role };
+    } catch (error) {
+      console.error("❌ Error en login:", error);
+      throw error;
     }
-
-    // Guardar en localStorage
-    localStorage.setItem("token", token);
-    localStorage.setItem("role", role);
-
-    console.log("✅ Token y rol guardados en localStorage");
-    return { token, role };
-  } catch (error) {
-    console.error("❌ Error en login:", error);
-    throw error;
   }
-}
 
-
-  /** 🔹 Registro */
   static async register(
     userData: UserRegisterData,
     token: string
@@ -97,7 +89,6 @@ class Users {
     }
   }
 
-  /** 🔹 Obtener todos los usuarios */
   static async getAllUsers(token: string): Promise<User[]> {
     try {
       const response = await axios.get<{
@@ -108,15 +99,12 @@ class Users {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("📡 Respuesta del backend:", response.data); // Depuración
-
-      return response.data.usersList; // Extraer solo la lista de usuarios
+      return response.data.usersList;
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  /** 🔹 Obtener perfil propio */
   static async getYourProfile(token: string): Promise<User> {
     try {
       const response = await axios.get<{ user: User }>(
@@ -130,7 +118,6 @@ class Users {
     }
   }
 
-  /** 🔹 Obtener usuario por ID */
   static async getUserById(
     userId: string,
     token: string
@@ -143,11 +130,10 @@ class Users {
       return response.data;
     } catch (error) {
       this.handleError(error);
-      throw error; // Lanza el error para manejarlo en `fetchUserDataById`
+      throw error;
     }
   }
 
-  /** 🔹 Eliminar usuario */
   static async deleteUser(userId: number, token: string): Promise<User> {
     try {
       const response = await axios.delete<User>(
@@ -161,7 +147,6 @@ class Users {
     }
   }
 
-  /** 🔹 Actualizar usuario */
   static async updateUser(
     userId: number,
     userData: UserRegisterData,
@@ -180,26 +165,20 @@ class Users {
     }
   }
 
-  /** 🔹 Cerrar sesión */
   static logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    console.log("🚪 Sesión cerrada");
   }
 
-  /** 🔹 Verificar autenticación */
   static isAuthenticated(): boolean {
     return !!localStorage.getItem("token");
   }
 
-  /** 🔹 Verificar si el usuario es admin */
   static isAdmin(): boolean {
     const role = localStorage.getItem("role");
-    console.log("🔍 Verificando role en isAdmin:", role);
     return role === "ADMIN";
   }
 
-  /** 🔹 Verificar si el usuario es normal */
   static isUser(): boolean {
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -210,7 +189,6 @@ class Users {
     }
   }
 
-  /** 🔹 Acceso exclusivo para administradores */
   static adminOnly(): boolean {
     return this.isAuthenticated() && this.isAdmin();
   }

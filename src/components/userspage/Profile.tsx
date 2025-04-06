@@ -23,12 +23,10 @@ function Profile() {
     try {
       const token = localStorage.getItem("token") ?? "";
       if (!token) {
-        console.error("No authentication token found.");
         return;
       }
 
       const response: UserProfile = await Users.getYourProfile(token);
-      console.log("Perfil obtenido:", response);
       setProfileInfo(response);
     } catch (error) {
       console.error("Error fetching profile information:", error);
@@ -56,11 +54,10 @@ function Profile() {
                   </p>
                   <p className="text-gray-700 text-center">
                     <span
-                      className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                        profileInfo.role === "ADMIN"
+                      className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${profileInfo.role === "ADMIN"
                           ? "bg-green-100 text-green-800"
                           : "bg-blue-100 text-blue-800"
-                      }`}
+                        }`}
                     >
                       {profileInfo.role === "ADMIN" ? "Administrador" : "Usuario"}
                     </span>
@@ -68,7 +65,7 @@ function Profile() {
                 </div>
                 {profileInfo.role === "ADMIN" && (
                   <div className="mt-6 flex justify-center">
-                    {profileInfo.id === 2 ? (
+                    {profileInfo.id === 1 ? (
                       <button
                         className="px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed shadow-sm"
                         disabled

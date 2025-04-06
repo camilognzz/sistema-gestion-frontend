@@ -35,11 +35,11 @@ const UpdateTransaction: React.FC = () => {
     categoryId: 0,
     transactionDate: "",
   });
-  const [displayAmount, setDisplayAmount] = useState(""); 
+  const [displayAmount, setDisplayAmount] = useState("");
   const [categories, setCategories] = useState<ITransactionCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true); 
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,8 +61,6 @@ const UpdateTransaction: React.FC = () => {
       }
 
       const response = await Financials.getTransactionById(Number(transactionId), token);
-      console.log("✅ API Response:", response);
-
       if (response) {
         setFormData({
           description: response.description,
@@ -71,7 +69,7 @@ const UpdateTransaction: React.FC = () => {
           categoryId: response.category?.id || 0,
           transactionDate: response.transactionDate,
         });
-        setDisplayAmount(formatAmount(response.amount)); 
+        setDisplayAmount(formatAmount(response.amount));
         setLoading(false);
       } else {
         console.error("❌ No se encontró la transacción en la respuesta.");
@@ -108,7 +106,7 @@ const UpdateTransaction: React.FC = () => {
   ) => {
     const { name, value } = e.target;
     if (name === "amount") {
-      const cleanedValue = value.replace(/[^\d]/g, ""); 
+      const cleanedValue = value.replace(/[^\d]/g, "");
       const parsedAmount = parseCOPAmount(cleanedValue);
       setFormData((prev) => ({ ...prev, amount: parsedAmount }));
       setDisplayAmount(formatAmount(parsedAmount));
@@ -175,9 +173,7 @@ const UpdateTransaction: React.FC = () => {
         transactionDate: formData.transactionDate,
       };
 
-      console.log("🔍 Enviando actualización:", updatedTransaction);
       await Financials.updateTransaction(Number(transactionId), updatedTransaction, token);
-      console.log("✅ Transaction updated");
       setUpdating(false);
       setIsSuccessModalOpen(true);
 

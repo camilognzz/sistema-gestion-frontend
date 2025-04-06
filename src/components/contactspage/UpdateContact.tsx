@@ -44,7 +44,6 @@ const UpdateContact: React.FC = () => {
       }
 
       const response = await Contacts.getContactById(Number(contactId), token);
-      console.log("✅ API Response:", response);
 
       if (response) {
         setContactData({
@@ -86,7 +85,6 @@ const UpdateContact: React.FC = () => {
     setError(null);
     try {
       const token = localStorage.getItem("token");
-      console.log("🔍 Token enviado:", token);
       if (!token) {
         setError("No se encontró un token de autenticación.");
         navigate("/login");
@@ -125,9 +123,7 @@ const UpdateContact: React.FC = () => {
         fechaRegistro: contactData.fechaRegistro,
       };
 
-      console.log("🔍 Enviando actualización:", updatedContact);
       await Contacts.updateContact(Number(contactId), updatedContact, token);
-      console.log("✅ Contact updated");
       setUpdating(false);
       setIsSuccessModalOpen(true);
 

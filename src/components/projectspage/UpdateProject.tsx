@@ -42,15 +42,14 @@ const UpdateProject: React.FC = () => {
       }
 
       const response = await Projects.getProjectById(Number(projectId), token);
-      console.log("✅ API Response:", response);
 
       if (response) {
         setProjectData({
           nombre: response.nombre,
           descripcion: response.descripcion,
           responsable: response.responsable,
-          fechaInicio: response.fechaInicio, 
-          fechaFin: response.fechaFin,       
+          fechaInicio: response.fechaInicio,
+          fechaFin: response.fechaFin,
           estado: response.estado,
         });
         setLoading(false);
@@ -104,7 +103,6 @@ const UpdateProject: React.FC = () => {
     setError(null);
     try {
       const token = localStorage.getItem("token");
-      console.log("🔍 Token enviado:", token);
       if (!token) {
         setError("No se encontró un token de autenticación.");
         return;
@@ -133,9 +131,7 @@ const UpdateProject: React.FC = () => {
         estado: projectData.estado,
       };
 
-      console.log("🔍 Enviando actualización:", updatedProject);
       await Projects.updateProject(Number(projectId), updatedProject, token);
-      console.log("✅ Project updated");
       setUpdating(false);
       setIsSuccessModalOpen(true);
 

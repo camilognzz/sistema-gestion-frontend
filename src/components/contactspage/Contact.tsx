@@ -33,7 +33,7 @@ const Contact: React.FC = () => {
   const [filteredContacts, setFilteredContacts] = useState<IContacto[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [contactsPerPage, setContactsPerPage] = useState(5); 
+  const [contactsPerPage, setContactsPerPage] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedContact, setSelectedContact] = useState<IContacto | null>(null);
@@ -52,7 +52,7 @@ const Contact: React.FC = () => {
         .filter((contact) =>
           contact.nombre.toLowerCase().includes(searchTerm.toLowerCase())
         )
-        .reverse() 
+        .reverse()
     );
     setCurrentPage(1);
   }, [searchTerm, contacts]);
@@ -69,8 +69,8 @@ const Contact: React.FC = () => {
       }
       const contactsResponse: IContacto[] = await Contacts.getAllContacts(token);
       if (Array.isArray(contactsResponse)) {
-        setContacts(contactsResponse); 
-        setFilteredContacts([...contactsResponse].reverse()); 
+        setContacts(contactsResponse);
+        setFilteredContacts([...contactsResponse].reverse());
       } else {
         console.error("Invalid response format:", contactsResponse);
         setContacts([]);
@@ -202,7 +202,7 @@ const Contact: React.FC = () => {
       <Navbar />
       <div className="flex flex-1">
         <SidebarItems />
-        <main className="flex-1 p-6 max-w-6xl mx-auto"> 
+        <main className="flex-1 p-6 max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-md p-6 mt-10">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
@@ -339,22 +339,20 @@ const Contact: React.FC = () => {
                     <button
                       onClick={prevPage}
                       disabled={currentPage === 1}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage === 1
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage === 1
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        }`}
                     >
                       <FaChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={nextPage}
                       disabled={currentPage >= Math.ceil(filteredContacts.length / contactsPerPage)}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage >= Math.ceil(filteredContacts.length / contactsPerPage)
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage >= Math.ceil(filteredContacts.length / contactsPerPage)
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        }`}
                     >
                       <FaChevronRight className="w-5 h-5" />
                     </button>

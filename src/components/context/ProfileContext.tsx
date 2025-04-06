@@ -20,17 +20,14 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     try {
       const token = localStorage.getItem("token") ?? "";
       if (!token) {
-        console.log("No token found");
         setProfile(null);
         setLoading(false);
         return;
       }
 
       const response: UserProfile = await Users.getYourProfile(token);
-      console.log("Profile fetched:", response);
       setProfile(response);
-    } catch (error) {
-      console.error("Error fetching profile:", error);
+    } catch {
       setProfile(null);
     } finally {
       setLoading(false);
@@ -38,7 +35,6 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    console.log("Logging out...");
     if (inactivityTimer) clearTimeout(inactivityTimer);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -51,54 +47,44 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
 
   const startInactivityTimer = () => {
     if (inactivityTimer) {
-      console.log("Clearing existing timer:", inactivityTimer);
       clearTimeout(inactivityTimer);
     }
 
     if (profile) {
-      console.log("Starting inactivity timer for", INACTIVITY_TIMEOUT / 1000, "seconds");
       const timer = setTimeout(() => {
-        console.log("Inactivity timeout reached, showing modal");
         setShowInactivityModal(true);
         setTimeout(() => {
-          console.log("Modal timeout reached, logging out");
           logout();
         }, MODAL_DISPLAY_TIME);
       }, INACTIVITY_TIMEOUT);
       setInactivityTimer(timer);
-    } else {
-      console.log("No profile, not starting timer");
     }
   };
 
   const handleActivity = () => {
-    console.log("Activity detected");
-    startInactivityTimer(); // Reinicia el temporizador con cada actividad
+    startInactivityTimer(); 
   };
 
   useEffect(() => {
-    console.log("Initial useEffect running");
     fetchProfileInfo();
 
-    // Configurar listeners de actividad
+    
     window.addEventListener("mousemove", handleActivity);
     window.addEventListener("keydown", handleActivity);
     window.addEventListener("click", handleActivity);
     window.addEventListener("scroll", handleActivity);
 
     return () => {
-      console.log("Cleaning up initial useEffect");
       if (inactivityTimer) clearTimeout(inactivityTimer);
       window.removeEventListener("mousemove", handleActivity);
       window.removeEventListener("keydown", handleActivity);
       window.removeEventListener("click", handleActivity);
       window.removeEventListener("scroll", handleActivity);
     };
-  }, []); // Solo se ejecuta al montar
+  }, []); 
 
   useEffect(() => {
-    console.log("Profile updated:", profile);
-    startInactivityTimer(); // Reinicia el temporizador cuando cambia el perfil
+    startInactivityTimer(); 
   }, [profile]);
 
   const updateProfile = async () => {

@@ -8,7 +8,7 @@ import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
 import { IFinancialTransactionDTO } from "../financialspage/interface/IFinancial";
 
-// Función para formatear el monto en pesos colombianos (COP)
+
 const formatAmount = (amount: number): string => {
   return new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -18,7 +18,6 @@ const formatAmount = (amount: number): string => {
   }).format(amount);
 };
 
-// Función para parsear un valor en formato COP a número
 const parseCOPAmount = (value: string): number => {
   const cleanedValue = value.replace(/[^\d,]/g, "").replace(",", ".");
   return parseFloat(cleanedValue) || 0;
@@ -33,11 +32,11 @@ const CreateTransaction: React.FC = () => {
     categoryId: 0,
     transactionDate: new Date().toISOString().split("T")[0],
   });
-  const [displayAmount, setDisplayAmount] = useState(""); // Estado para el monto mostrado
+  const [displayAmount, setDisplayAmount] = useState("");
   const [categories, setCategories] = useState<ITransactionCategory[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true); // Nuevo estado para carga de categorías
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   useEffect(() => {
@@ -70,7 +69,7 @@ const CreateTransaction: React.FC = () => {
   ) => {
     const { name, value } = e.target;
     if (name === "amount") {
-      const cleanedValue = value.replace(/[^\d]/g, ""); // Permitir solo números
+      const cleanedValue = value.replace(/[^\d]/g, "");
       const parsedAmount = parseCOPAmount(cleanedValue);
       setFormData((prev) => ({ ...prev, amount: parsedAmount }));
       setDisplayAmount(formatAmount(parsedAmount));
@@ -136,7 +135,6 @@ const CreateTransaction: React.FC = () => {
         transactionDate: formData.transactionDate,
       };
 
-      console.log("Datos enviados al backend:", JSON.stringify(transactionData, null, 2));
       const response = await Financials.createTransaction(transactionData, token);
       console.log("Respuesta del backend:", JSON.stringify(response, null, 2));
       setIsLoading(false);

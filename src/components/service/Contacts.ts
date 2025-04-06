@@ -5,13 +5,11 @@ class Contacts {
   private static readonly BASE_URL =
     "http://localhost:8080/api/v1/contactos-estrategicos";
 
-  /** 🔹 Obtener todos los contactos */
   static async getAllContacts(token: string): Promise<IContacto[]> {
     try {
       const response = await axios.get<IContacto[]>(this.BASE_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Contactos obtenidos:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -19,7 +17,6 @@ class Contacts {
     }
   }
 
-  /** 🔹 Obtener un proyecto por ID */
   static async getContactById(
     id: number,
     token: string
@@ -28,7 +25,6 @@ class Contacts {
       const response = await axios.get<IContacto>(`${this.BASE_URL}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Contacto obtenido:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -36,7 +32,6 @@ class Contacts {
     }
   }
 
-  /** 🔹 Crear un contacto */
   static async createContact(
     contactData: IContacto,
     token: string
@@ -52,34 +47,29 @@ class Contacts {
           },
         }
       );
-      console.log("Contacto creado:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
       throw error;
     }
   }
-  /** 🔹 Eliminar un contacto */
   static async deleteContact(id: number, token: string): Promise<void> {
     try {
       await axios.delete(`${this.BASE_URL}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`Contacto con ID ${id} eliminado`);
     } catch (error) {
       this.handleError(error);
       throw error;
     }
   }
 
-  /** 🔹 Actualizar un contacto (Alineado con Contacts.ts) */
   static async updateContact(
     contactId: number,
     contactData: IContacto,
     token: string
   ): Promise<IContacto> {
     try {
-      console.log("Enviando Solicitud de actualizacion de datos:", contactData);
       const response = await axios.put<IContacto>(
         `${this.BASE_URL}/${contactId}`,
         contactData,
@@ -90,7 +80,6 @@ class Contacts {
           },
         }
       );
-      console.log("Respuesta del servidor:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -98,7 +87,6 @@ class Contacts {
     }
   }
 
-  /** 🔹 Función auxiliar para manejar errores (Alineado con Users.ts) */
   private static handleError(error: unknown): never {
     if (axios.isAxiosError(error)) {
       const message = error.response?.data?.message || error.message;

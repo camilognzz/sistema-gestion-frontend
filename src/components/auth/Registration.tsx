@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Users from "../service/Users"; 
+import Users from "../service/Users";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../common/Navbar"; 
-import { SidebarItems } from "../common/SidebarItems"; 
-import SuccessModal from "../modals/SuccessModal"; 
-import { Eye, EyeOff } from "lucide-react"; 
+import Navbar from "../common/Navbar";
+import { SidebarItems } from "../common/SidebarItems";
+import SuccessModal from "../modals/SuccessModal";
+import { Eye, EyeOff } from "lucide-react";
 
 function Registration() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ function Registration() {
     name: "",
     email: "",
     password: "",
-    role: "USER", 
+    role: "USER",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);

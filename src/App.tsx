@@ -32,7 +32,6 @@ function App() {
           <ProfileProvider>
             <Routes>
               {/* Rutas públicas */}
-              <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
 
               {/* Rutas protegidas (requieren autenticación) */}

@@ -1,10 +1,10 @@
 import { ChevronLast, ChevronFirst } from "lucide-react";
 import { useContext, createContext, useState, ReactNode } from "react";
-import { useLocation } from "react-router-dom"; // Para detectar la ruta activa
+import { useLocation } from "react-router-dom";
 
 interface SidebarContextType {
   expanded: boolean;
-  setExpanded: (expanded: boolean) => void; // Añadimos setExpanded al contexto
+  setExpanded: (expanded: boolean) => void;
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -14,10 +14,10 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ children }: SidebarProps) {
-  const [expanded, setExpanded] = useState<boolean>(false); // Cerrado por defecto
+  const [expanded, setExpanded] = useState<boolean>(false);
 
   return (
-    <aside className="h-screen fixed">
+    <aside className="h-screen">
       <nav className="h-full flex flex-col bg-slate-50 shadow-sm">
         {/* Header */}
         <div className="p-4 pb-2 flex justify-between items-center">
@@ -52,32 +52,31 @@ interface SidebarItemProps {
 
 export function SidebarItem({ icon, text, alert = false }: SidebarItemProps) {
   const context = useContext(SidebarContext);
-  const location = useLocation(); // Para detectar la ruta actual
+  const location = useLocation();
 
   if (!context) {
     throw new Error("SidebarItem debe usarse dentro de un SidebarContext.Provider");
   }
 
   const { expanded, setExpanded } = context;
-  const isActive = location.pathname.includes(text.toLowerCase()); // Marcar como activo si la ruta coincide
+  const isActive = location.pathname.includes(text.toLowerCase());
 
   const handleClick = () => {
     if (!expanded) {
-      setExpanded(false); // Expandir el sidebar al hacer clic en un ítem si está cerrado
+      setExpanded(true);
     }
   };
 
   return (
     <li
-      onClick={handleClick} // Expandir al hacer clic
+      onClick={handleClick}
       className={`
         relative flex items-center py-2 px-3 my-1
         font-medium rounded-md cursor-pointer
         transition-colors group
-        ${
-          isActive
-            ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
-            : "hover:bg-indigo-50 text-gray-600"
+        ${isActive
+          ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
+          : "hover:bg-indigo-50 text-gray-600"
         }
       `}
     >

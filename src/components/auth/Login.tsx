@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Users from "../service/Users";
 import { Eye, EyeOff } from "lucide-react";
-import { useProfile } from "../context/ProfileContext"; // Ajusta la ruta
+import { useProfile } from "../context/ProfileContext";
 
 interface LoginResponse {
   token: string;
@@ -22,7 +22,7 @@ export const Login = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
-  const { updateProfile } = useProfile(); // Obtenemos updateProfile del contexto
+  const { updateProfile } = useProfile();
 
   useEffect(() => {
     if (isBlocked) {
@@ -54,7 +54,7 @@ export const Login = () => {
         if (userData.user && userData.user.role) {
           localStorage.setItem("role", userData.user.role);
         }
-        await updateProfile(); // Actualizamos el perfil en el contexto
+        await updateProfile();
         setTimeout(() => {
           navigate("/perfil");
         }, 1000);

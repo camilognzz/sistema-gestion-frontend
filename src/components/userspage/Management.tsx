@@ -271,7 +271,7 @@ const Management: React.FC = () => {
                               >
                                 <FaEye className="w-5 h-5" />
                               </button>
-                              {user.id === 2 ? (
+                              {user.id === 1 ? (
                                 <span className="text-gray-300 cursor-not-allowed" title="No se puede editar">
                                   <FaEdit className="w-5 h-5" />
                                 </span>
@@ -284,7 +284,7 @@ const Management: React.FC = () => {
                                   <FaEdit className="w-5 h-5" />
                                 </Link>
                               )}
-                              {user.id === 2 ? (
+                              {user.id === 1 ? (
                                 <span className="text-gray-300 cursor-not-allowed" title="No se puede eliminar">
                                   <FaTrash className="w-5 h-5" />
                                 </span>

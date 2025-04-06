@@ -7,7 +7,6 @@ import {
 class Financials {
   private static readonly BASE_URL = "http://localhost:8080/api/financial";
 
-  /** 🔹 Obtener todas las transacciones por rango de fechas */
   static async getTransactionsByDateRange(
     start: string,
     end: string,
@@ -24,7 +23,6 @@ class Financials {
           },
         }
       );
-      console.log("Transacciones obtenidas:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -32,21 +30,18 @@ class Financials {
     }
   }
 
-  /** 🔹 Obtener el balance actual */
   static async getCurrentBalance(token: string): Promise<number> {
     try {
       const response = await axios.get<number>(`${this.BASE_URL}/balance`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Balance actual obtenido:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
-      return 0; // Valor por defecto en caso de error
+      return 0;
     }
   }
 
-  /** 🔹 Crear una transacción */
   static async createTransaction(
     transactionData: IFinancialTransactionDTO,
     token: string
@@ -62,7 +57,6 @@ class Financials {
           },
         }
       );
-      console.log("Transacción creada:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -70,7 +64,6 @@ class Financials {
     }
   }
 
-  /** 🔹 Actualizar una transacción */
   static async updateTransaction(
     id: number,
     transactionData: IFinancialTransactionDTO,
@@ -87,7 +80,6 @@ class Financials {
           },
         }
       );
-      console.log("Transacción actualizada:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -95,21 +87,21 @@ class Financials {
     }
   }
 
-  /** 🔹 Eliminar una transacción */
   static async deleteTransaction(id: number, token: string): Promise<void> {
     try {
       await axios.delete(`${this.BASE_URL}/transactions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`Transacción con ID ${id} eliminada`);
     } catch (error) {
       this.handleError(error);
       throw error;
     }
   }
 
-  /** 🔹 Obtener una transacción por ID */
-  static async getTransactionById(id: number, token: string): Promise<IFinancialTransaction> {
+  static async getTransactionById(
+    id: number,
+    token: string
+  ): Promise<IFinancialTransaction> {
     try {
       const response = await axios.get<IFinancialTransaction>(
         `${this.BASE_URL}/transactions/${id}`,
@@ -117,7 +109,6 @@ class Financials {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log("Transacción obtenida por ID:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -125,7 +116,6 @@ class Financials {
     }
   }
 
-  /** 🔹 Función auxiliar para manejar errores */
   private static handleError(error: unknown): never {
     if (axios.isAxiosError(error)) {
       const message = error.response?.data?.message || error.message;

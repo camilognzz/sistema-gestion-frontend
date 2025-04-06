@@ -3,14 +3,12 @@ import { IVoluntario } from "../volunteerspage/interface/IVoluntario";
 
 class Volunteers {
   private static readonly BASE_URL = "http://localhost:8080/api/v1/voluntarios";
-  /** 🔹 Obtener todos los voluntarios */
 
   static async getAllVolunteers(token: string): Promise<IVoluntario[]> {
     try {
       const response = await axios.get<IVoluntario[]>(this.BASE_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Voluntarios obtenidos:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -18,7 +16,6 @@ class Volunteers {
     }
   }
 
-  /** 🔹 Obtener un Voluntario por ID */
   static async getVolunteerById(
     id: number,
     token: string
@@ -27,7 +24,6 @@ class Volunteers {
       const response = await axios.get<IVoluntario>(`${this.BASE_URL}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Voluntario obtenido:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -35,7 +31,6 @@ class Volunteers {
     }
   }
 
-  /** 🔹 Crear un voluntario */
   static async createVolunteer(
     volunteerData: IVoluntario,
     token: string
@@ -51,7 +46,6 @@ class Volunteers {
           },
         }
       );
-      console.log("Voluntario creado:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -59,30 +53,23 @@ class Volunteers {
     }
   }
 
-  /** 🔹 Eliminar un voluntario */
   static async deleteVolunteer(id: number, token: string): Promise<void> {
     try {
       await axios.delete(`${this.BASE_URL}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`Voluntario con ID ${id} eliminado`);
     } catch (error) {
       this.handleError(error);
       throw error;
     }
   }
 
-  /** 🔹 Actualizar un voluntario (Alineado con IVoluntario.ts) */
   static async updateVolunteer(
     volunteerId: number,
     volunteerData: IVoluntario,
     token: string
   ): Promise<IVoluntario> {
     try {
-      console.log(
-        "Enviando Solicitud de actualizacion de datos:",
-        volunteerData
-      );
       const response = await axios.put<IVoluntario>(
         `${this.BASE_URL}/${volunteerId}`,
         volunteerData,
@@ -93,7 +80,6 @@ class Volunteers {
           },
         }
       );
-      console.log("Respuesta del servidor:", response.data);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -101,7 +87,6 @@ class Volunteers {
     }
   }
 
-  /** 🔹 Función auxiliar para manejar errores (Alineado con Users.ts) */
   private static handleError(error: unknown): never {
     if (axios.isAxiosError(error)) {
       const message = error.response?.data?.message || error.message;

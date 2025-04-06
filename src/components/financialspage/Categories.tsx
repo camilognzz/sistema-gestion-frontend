@@ -11,7 +11,7 @@ import {
   FaFilePdf,
   FaFileExcel,
   FaEye,
-  FaArrowLeft, // Nuevo ícono para el botón "Atrás"
+  FaArrowLeft,
 } from "react-icons/fa";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
@@ -29,7 +29,7 @@ const Category: React.FC = () => {
   const [filteredCategories, setFilteredCategories] = useState<ITransactionCategory[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [categoriesPerPage, setCategoriesPerPage] = useState(5); // Valor inicial ajustable
+  const [categoriesPerPage, setCategoriesPerPage] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<ITransactionCategory | null>(null);
@@ -48,7 +48,7 @@ const Category: React.FC = () => {
         .filter((category) =>
           category.name.toLowerCase().includes(searchTerm.toLowerCase())
         )
-        .reverse() // Ordenar del último al primero
+        .reverse()
     );
     setCurrentPage(1);
   }, [searchTerm, categories]);
@@ -65,7 +65,7 @@ const Category: React.FC = () => {
       }
       const categoriesResponse = await Categories.getAllCategories(token);
       setCategories(categoriesResponse);
-      setFilteredCategories([...categoriesResponse].reverse()); // Orden inverso inicial
+      setFilteredCategories([...categoriesResponse].reverse());
     } catch (error) {
       console.error("Error fetching categories:", error);
       setCategories([]);
@@ -311,22 +311,20 @@ const Category: React.FC = () => {
                     <button
                       onClick={prevPage}
                       disabled={currentPage === 1}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage === 1
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage === 1
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        }`}
                     >
                       <FaChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={nextPage}
                       disabled={currentPage >= Math.ceil(filteredCategories.length / categoriesPerPage)}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage >= Math.ceil(filteredCategories.length / categoriesPerPage)
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage >= Math.ceil(filteredCategories.length / categoriesPerPage)
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        }`}
                     >
                       <FaChevronRight className="w-5 h-5" />
                     </button>

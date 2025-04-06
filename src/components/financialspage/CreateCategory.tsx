@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Categories from "../service/Categories"; // Ajusta la ruta según tu estructura
+import Categories from "../service/Categories";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
@@ -36,20 +36,19 @@ const CreateCategory: React.FC = () => {
         return;
       }
 
-      // Validaciones básicas
+
       if (!formData.name.trim()) {
         setError("El nombre es obligatorio.");
         setIsLoading(false);
         return;
       }
 
-      // Preparar datos para enviar
+
       const categoryData: ICategoryDTO = {
         name: formData.name,
         description: formData.description || undefined,
       };
 
-      console.log("Datos enviados al backend:", JSON.stringify(categoryData, null, 2));
       const response = await Categories.createCategory(categoryData, token);
       console.log("Respuesta del backend:", JSON.stringify(response, null, 2));
       setIsLoading(false);
@@ -107,7 +106,7 @@ const CreateCategory: React.FC = () => {
                 <textarea
                   id="description"
                   name="description"
-                  value={formData.description ?? ""} 
+                  value={formData.description ?? ""}
                   onChange={handleChange}
                   rows={4}
                   className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700"

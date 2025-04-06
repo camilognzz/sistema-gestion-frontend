@@ -33,7 +33,6 @@ const CreateProject: React.FC = () => {
           setError("No se encontró un token de autenticación.");
           return;
         }
-        console.log("Token para obtener usuarios:", token);
         const userList = await Users.getAllUsers(token);
         setUsers(userList);
       } catch (err) {
@@ -92,7 +91,6 @@ const CreateProject: React.FC = () => {
         estado: formData.estado,
       };
 
-      console.log("Datos enviados al backend:", JSON.stringify(project, null, 2));
       const response = await Projects.createProject(project, token);
       console.log("Respuesta del backend:", JSON.stringify(response, null, 2));
       setIsLoading(false);
@@ -243,7 +241,7 @@ const CreateProject: React.FC = () => {
                     className="flex items-center gap-2 px-4 py-2 cursor-pointer bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-200"
                     disabled={isLoading}
                   >
-                     Cancelar
+                    Cancelar
                   </button>
                   <button
                     type="submit"
@@ -254,7 +252,7 @@ const CreateProject: React.FC = () => {
                       <div className="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                     ) : (
                       <>
-                         Guardar
+                        Guardar
                       </>
                     )}
                   </button>

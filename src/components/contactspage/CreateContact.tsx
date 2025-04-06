@@ -70,7 +70,6 @@ const CreateContact: React.FC = () => {
         fechaRegistro: formData.fechaRegistro,
       };
 
-      console.log("Datos enviados al backend:", JSON.stringify(contactData, null, 2));
       const response = await Contacts.createContact(contactData, token);
       console.log("Respuesta del backend:", JSON.stringify(response, null, 2));
       setIsLoading(false);

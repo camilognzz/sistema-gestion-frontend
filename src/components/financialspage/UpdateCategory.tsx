@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Categories from "../service/Categories"; 
+import Categories from "../service/Categories";
 import Navbar from "../common/Navbar";
 import { SidebarItems } from "../common/SidebarItems";
 import SuccessModal from "../modals/SuccessModal";
@@ -17,18 +17,18 @@ const UpdateCategory: React.FC = () => {
   const navigate = useNavigate();
   const { categoryId } = useParams<{ categoryId: string }>();
 
-  
+
   const [formData, setFormData] = useState<ICategoryDTO>({
     name: "",
     description: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(true); 
-  const [isUpdating, setIsUpdating] = useState(false); 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  
+
   useEffect(() => {
     if (categoryId) {
       fetchCategoryDataById(categoryId);
@@ -61,17 +61,17 @@ const UpdateCategory: React.FC = () => {
     }
   };
 
-  
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
-      setErrors((prev) => ({ ...prev, [name]: undefined })); 
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     },
     []
   );
 
-  
+
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
     if (!formData.name.trim()) {
@@ -80,7 +80,7 @@ const UpdateCategory: React.FC = () => {
     return newErrors;
   };
 
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUpdating(true);
@@ -106,13 +106,11 @@ const UpdateCategory: React.FC = () => {
         return;
       }
 
-      
       const categoryData: ICategoryDTO = {
         name: formData.name,
         description: formData.description!.trim() === "" ? undefined : formData.description,
       };
 
-      console.log("Datos enviados al backend:", JSON.stringify(categoryData, null, 2));
       const response = await Categories.updateCategory(Number(categoryId), categoryData, token);
       console.log("Respuesta del backend:", JSON.stringify(response, null, 2));
 
@@ -135,12 +133,12 @@ const UpdateCategory: React.FC = () => {
     }
   };
 
-  
+
   const handleCancel = useCallback(() => {
     navigate("/categorias");
   }, [navigate]);
 
-  
+
   const closeSuccessModal = useCallback(() => {
     setIsSuccessModalOpen(false);
     navigate("/categorias");
@@ -184,9 +182,8 @@ const UpdateCategory: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${
-                    errors.name ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 ${errors.name ? "border-red-500" : "border-gray-300"
+                    }`}
                   placeholder="Ingrese el nombre de la categoría"
                   disabled={isUpdating}
                 />

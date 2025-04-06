@@ -158,7 +158,6 @@ const UpdateVolunteer: React.FC = () => {
         fechaRegistro: formData.fechaRegistro,
       };
 
-      console.log("Datos enviados al backend:", JSON.stringify(volunteerData, null, 2));
       const response = await Volunteers.updateVolunteer(Number(volunteerId), volunteerData, token);
       console.log("Respuesta del backend:", JSON.stringify(response, null, 2));
 

@@ -55,8 +55,7 @@ const Project: React.FC = () => {
       .filter((project) =>
         project.nombre.toLowerCase().includes(searchTerm.toLowerCase())
       )
-      .reverse(); 
-    console.log("Filtered Projects (reversed):", filtered); 
+      .reverse();
     setFilteredProjects(filtered);
     setCurrentPage(1);
   }, [searchTerm, projects]);
@@ -73,11 +72,9 @@ const Project: React.FC = () => {
       }
       const projectsResponse: IProyecto[] = await Projects.getAllProjects(token);
       if (Array.isArray(projectsResponse)) {
-        console.log("Projects Response:", projectsResponse); 
-        setProjects(projectsResponse); 
-        const reversedProjects = [...projectsResponse].reverse(); 
-        console.log("Reversed Projects:", reversedProjects); 
-        setFilteredProjects(reversedProjects); 
+        setProjects(projectsResponse);
+        const reversedProjects = [...projectsResponse].reverse();
+        setFilteredProjects(reversedProjects);
       } else {
         console.error("Invalid response format:", projectsResponse);
         setProjects([]);
@@ -146,7 +143,6 @@ const Project: React.FC = () => {
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
   const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
-  console.log("Current Projects:", currentProjects); 
 
   const nextPage = () => {
     if (currentPage < Math.ceil(filteredProjects.length / projectsPerPage)) {
@@ -289,15 +285,14 @@ const Project: React.FC = () => {
                             <td className="py-4 px-6">{project.responsable.name}</td>
                             <td className="py-4 px-6">
                               <span
-                                className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                                  project.estado === "FINALIZADO"
-                                    ? "bg-green-100 text-green-800"
-                                    : project.estado === "EN_PROGRESO"
+                                className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${project.estado === "FINALIZADO"
+                                  ? "bg-green-100 text-green-800"
+                                  : project.estado === "EN_PROGRESO"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : project.estado === "CANCELADO"
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-gray-100 text-gray-800"
-                                }`}
+                                      ? "bg-red-100 text-red-800"
+                                      : "bg-gray-100 text-gray-800"
+                                  }`}
                               >
                                 {formatEstado(project.estado)}
                               </span>
@@ -350,22 +345,20 @@ const Project: React.FC = () => {
                     <button
                       onClick={prevPage}
                       disabled={currentPage === 1}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage === 1
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage === 1
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        }`}
                     >
                       <FaChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={nextPage}
                       disabled={currentPage >= Math.ceil(filteredProjects.length / projectsPerPage)}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage >= Math.ceil(filteredProjects.length / projectsPerPage)
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage >= Math.ceil(filteredProjects.length / projectsPerPage)
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        }`}
                     >
                       <FaChevronRight className="w-5 h-5" />
                     </button>
@@ -428,15 +421,14 @@ const Project: React.FC = () => {
                           <p>
                             <span className="font-medium">Estado:</span>{" "}
                             <span
-                              className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                                selectedProject.estado === "FINALIZADO"
-                                  ? "bg-green-100 text-green-800"
-                                  : selectedProject.estado === "EN_PROGRESO"
+                              className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${selectedProject.estado === "FINALIZADO"
+                                ? "bg-green-100 text-green-800"
+                                : selectedProject.estado === "EN_PROGRESO"
                                   ? "bg-yellow-100 text-yellow-800"
                                   : selectedProject.estado === "CANCELADO"
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-gray-100 text-gray-800"
-                              }`}
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
                             >
                               {formatEstado(selectedProject.estado)}
                             </span>

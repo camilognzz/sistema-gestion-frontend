@@ -3,11 +3,11 @@ import Users from "../service/Users";
 import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 import { useState } from "react";
 import ConfirmationModal from "../modals/ConfirmationModal";
-import { useProfile } from "../context/ProfileContext"; // Ajusta la ruta
+import { useProfile } from "../context/ProfileContext";
 
 function Navbar() {
   const navigate = useNavigate();
-  const { profile } = useProfile(); // Usamos el perfil del contexto
+  const { profile } = useProfile();
   const [showModal, setShowModal] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -31,9 +31,9 @@ function Navbar() {
     <>
       <nav className="w-full bg-slate-50 shadow-md py-4 px-4 md:px-10 lg:px-20 flex justify-between items-center">
         <Link to={"/usuarios"}>
-        <div className="text-xl md:text-2xl font-bold text-gray-600 hover:text-gray-800">
-          Fundación Habacuc
-        </div>
+          <div className="text-xl md:text-2xl font-bold text-gray-600 hover:text-gray-800">
+            Fundación Habacuc
+          </div>
         </Link>
         <div className="flex items-center gap-2 md:gap-4">
           <span className="text-gray-700 text-sm md:text-base font-medium">

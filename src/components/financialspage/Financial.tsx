@@ -28,7 +28,6 @@ const formatDate = (dateString: string): string => {
   return `${day}/${month}/${year}`;
 };
 
-// Función para formatear el monto en pesos colombianos (COP)
 const formatAmount = (amount: number): string => {
   return new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -40,7 +39,12 @@ const formatAmount = (amount: number): string => {
 
 const getTransactionTypeStyle = (type: string) => {
   const translatedType = type === "INCOME" ? "Ingreso" : type === "EXPENSE" ? "Gasto" : type;
-  const className = type === "INCOME" ? "text-green-600" : type === "EXPENSE" ? "text-red-600" : "text-gray-700";
+  const className =
+    type === "INCOME"
+      ? "inline-flex items-center justify-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold"
+      : type === "EXPENSE"
+        ? "inline-flex items-center justify-center px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold"
+        : "inline-flex items-center justify-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-semibold";
   return { translatedType, className };
 };
 
@@ -142,7 +146,7 @@ const Financial: React.FC = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = async () => {
+  const confirmDelete = async (): Promise<void> => {
     if (transactionIdToDelete === null) return;
     try {
       const token = localStorage.getItem("token");
@@ -163,47 +167,50 @@ const Financial: React.FC = () => {
     }
   };
 
-  const closeDeleteModal = () => {
+  const closeDeleteModal = (): void => {
     setIsDeleteModalOpen(false);
     setTransactionIdToDelete(null);
   };
 
-  const closeSuccessModal = () => {
+  const closeSuccessModal = (): void => {
     setIsSuccessModalOpen(false);
   };
 
-  const openModal = (transaction: IFinancialTransaction) => {
+  const openModal = (transaction: IFinancialTransaction): void => {
     setSelectedTransaction(transaction);
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     setIsModalOpen(false);
     setSelectedTransaction(null);
   };
 
-  const handleTransactionsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleTransactionsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setTransactionsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
 
   const indexOfLastTransaction = currentPage * transactionsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
-  const currentTransactions = filteredTransactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+  const currentTransactions = filteredTransactions.slice(
+    indexOfFirstTransaction,
+    indexOfLastTransaction
+  );
 
-  const nextPage = () => {
+  const nextPage = (): void => {
     if (currentPage < Math.ceil(filteredTransactions.length / transactionsPerPage)) {
       setCurrentPage(currentPage + 1);
     }
   };
 
-  const prevPage = () => {
+  const prevPage = (): void => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
-  const exportToPDF = () => {
+  const exportToPDF = (): void => {
     const doc = new jsPDF();
     doc.text("Reporte de Transacciones Financieras", 14, 15);
 
@@ -226,7 +233,7 @@ const Financial: React.FC = () => {
     doc.save("reporte_transacciones.pdf");
   };
 
-  const exportToExcel = () => {
+  const exportToExcel = (): void => {
     const filteredTransactionsExcel = transactions.map(
       ({ id, description, amount, type, category, transactionDate }) => ({
         id: id !== undefined ? id.toString() : "N/A",
@@ -260,7 +267,7 @@ const Financial: React.FC = () => {
       <Navbar />
       <div className="flex flex-1">
         <SidebarItems />
-        <main className="flex-1 p-6 max-w-6xl mx-auto"> 
+        <main className="flex-1 p-6 max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-md p-6 mt-10">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
@@ -281,7 +288,7 @@ const Financial: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Buscar por descripción..."
-                    className="w-70 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 placeholder-gray-400"
+                    className="w-[280px] pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 placeholder-gray-400"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -351,13 +358,15 @@ const Financial: React.FC = () => {
                           const { translatedType, className } = getTransactionTypeStyle(transaction.type);
                           return (
                             <tr
-                              key={transaction.id}
+                              key={transaction.id ?? Math.random()}
                               className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
                             >
-                              <td className="py-4 px-6">{transaction.id}</td>
+                              <td className="py-4 px-6">{transaction.id ?? "N/A"}</td>
                               <td className="py-4 px-6">{transaction.description}</td>
                               <td className="py-4 px-6">{formatAmount(transaction.amount)}</td>
-                              <td className={`py-4 px-6 ${className}`}>{translatedType}</td>
+                              <td className="py-4 px-6">
+                                <span className={className}>{translatedType}</span>
+                              </td>
                               <td className="py-4 px-6">{transaction.category?.name ?? "N/A"}</td>
                               <td className="py-4 px-6">{formatDate(transaction.transactionDate)}</td>
                               <td className="py-4 px-6 flex justify-center gap-4">
@@ -369,7 +378,7 @@ const Financial: React.FC = () => {
                                   <FaEye className="w-5 h-5" />
                                 </button>
                                 <Link
-                                  to={`/actualizar-transaccion/${transaction.id}`}
+                                  to={`/actualizar-transaccion/${transaction.id ?? ""}`}
                                   className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
                                   title="Editar"
                                 >
@@ -406,22 +415,20 @@ const Financial: React.FC = () => {
                     <button
                       onClick={prevPage}
                       disabled={currentPage === 1}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage === 1
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage === 1
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        }`}
                     >
                       <FaChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={nextPage}
                       disabled={currentPage >= Math.ceil(filteredTransactions.length / transactionsPerPage)}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        currentPage >= Math.ceil(filteredTransactions.length / transactionsPerPage)
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                      }`}
+                      className={`p-2 rounded-lg transition-all duration-200 ${currentPage >= Math.ceil(filteredTransactions.length / transactionsPerPage)
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                        }`}
                     >
                       <FaChevronRight className="w-5 h-5" />
                     </button>
@@ -480,13 +487,15 @@ const Financial: React.FC = () => {
                         </h3>
                         <div className="space-y-3 text-gray-700">
                           <p>
-                            <span className="font-medium">ID:</span> {selectedTransaction.id}
+                            <span className="font-medium">ID:</span> {selectedTransaction.id ?? "N/A"}
                           </p>
                           <p>
-                            <span className="font-medium">Descripción:</span> {selectedTransaction.description}
+                            <span className="font-medium">Descripción:</span>{" "}
+                            {selectedTransaction.description}
                           </p>
                           <p>
-                            <span className="font-medium">Monto:</span> {formatAmount(selectedTransaction.amount)}
+                            <span className="font-medium">Monto:</span>{" "}
+                            {formatAmount(selectedTransaction.amount)}
                           </p>
                           <p>
                             <span className="font-medium">Tipo:</span>{" "}
